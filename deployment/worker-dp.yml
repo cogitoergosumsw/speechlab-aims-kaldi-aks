@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: wudaown/docker-kaldi-worker:1.0.1
+          #imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: azurefileshare
+              mountPath: /opt/models
+          env:
+            - name: GET_HOSTS_FROM
+              value: env
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '2G'
+      volumes:
+        - name: azurefileshare
+          azureFile:
+            secretName: volume-azurefile-storage-secret
+            shareName: model
+            readOnly: false

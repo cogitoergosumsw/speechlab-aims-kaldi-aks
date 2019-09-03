@@ -1,0 +1,36 @@
+apiVersion: v1
+items:
+- apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    annotations:
+      autoscaling.alpha.kubernetes.io/conditions: '[{"type":"AbleToScale","status":"True","lastTransitionTime":"2019-02-15T02:01:24Z","reason":"ScaleDownStabilized","message":"recent
+        recommendations were higher than current one, applying the highest recent
+        recommendation"},{"type":"ScalingActive","status":"True","lastTransitionTime":"2019-02-18T19:10:19Z","reason":"ValidMetricFound","message":"the
+        HPA was able to successfully calculate a replica count from cpu resource utilization
+        (percentage of request)"},{"type":"ScalingLimited","status":"True","lastTransitionTime":"2019-02-20T02:35:06Z","reason":"TooManyReplicas","message":"the
+        desired replica count is more than the maximum replica count"}]'
+      autoscaling.alpha.kubernetes.io/current-metrics: '[{"type":"Resource","resource":{"name":"cpu","currentAverageUtilization":5,"currentAverageValue":"11m"}}]'
+    creationTimestamp: 2019-02-15T02:01:09Z
+    name: worker
+    namespace: default
+    resourceVersion: "656839"
+    selfLink: /apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/worker
+    uid: 9040762f-30c5-11e9-9126-56c1cade6907
+  spec:
+    maxReplicas: 14
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: extensions/v1beta1
+      kind: Deployment
+      name: worker
+    targetCPUUtilizationPercentage: 50
+  status:
+    currentCPUUtilizationPercentage: 5
+    currentReplicas: 14
+    desiredReplicas: 14
+    lastScaleTime: 2019-02-20T02:45:21Z
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

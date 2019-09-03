@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: volume-azurefile-storage-deployment
+spec:  
+  template:
+    metadata:
+      labels:
+        app: storagedemo
+    spec:
+      containers:
+      - name: storagedemo
+        image: pnimages.azurecr.io/storagedemo:1  
+        volumeMounts:
+        - name: azurefileshare
+          mountPath: /storage      
+      imagePullSecrets:
+      - name: pnimages       
+      volumes:
+      - name: azurefileshare
+        azureFile:
+          secretName: volume-azurefile-storage-secret
+          shareName: storage
+          readOnly: false
