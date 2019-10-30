@@ -6,4 +6,4 @@ This project is supposed to use Kubernetes and Docker to create a container orch
 
 ## Architecture Design 
 
-![Archtecture Diagram](./architecture_diagram.eps)
+![Archtecture Diagram](./architecture_diagram.png)
