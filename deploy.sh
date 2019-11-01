@@ -11,6 +11,9 @@ az extension add --name aks-preview
 # Update the extension to make sure you have the latest version installed
 az extension update --name aks-preview
 
+# Install CLI to use kubectl on az
+az aks install-cli
+
 state=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | grep -i registered)
 
 while [[ -z $state ]]
@@ -23,30 +26,32 @@ do
 done
 echo $state
 
+KUBE_NAME='kaldi-feature-test'
+RESOURCE_GROUP='kaldi-demos'
+
 az provider register --namespace Microsoft.ContainerService
 
-az group create --name kaldi-demos --location southeastasia
+az group create --name $RESOURCE_GROUP --location southeastasia
 
-az aks create -g kaldi-demos -n kaldi --node-count 3 --enable-vmss --enable-cluster-autoscaler --min-count 3 --max-count 6 --node-vm-size 'Standard_E2s_v3'
-# az aks create -g kaldi-demos -n kaldi --node-count 3 --enable-vmss --enable-cluster-autoscaler --min-count 3 --max-count 6
+az aks create -g $RESOURCE_GROUP -n $KUBE_NAME --node-count 5 --enable-vmss --enable-cluster-autoscaler --min-count 3 --max-count 6 --node-vm-size 'Standard_E2s_v3'
 
-# az aks get-credentials -n kaldi -g kaldi-demos
+az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
 # kubectl create -f pvc/nfs-server-azure-pvc.yml
-# # 
+ 
 # kubectl create -f rc/nfs-server-rc.yml
-# 
+
 # kubectl create -f services/nfs-server-service.yml 
 # 
 # NFS_IP=$(kubectl get service nfs-server | awk '{print $3}' | sed -n 2p)
 #  
 # sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > nfs-pv.yml
-# # 
-# # kubectl create -f nfs-pv.yml
-# # 
-# # rm nfs-pv.yml
-# # 
-# # kubectl create -f pvc/nfs-pvc.yml
+#  
+# kubectl create -f nfs-pv.yml
+#  
+# rm nfs-pv.yml
+# 
+# kubectl create -f pvc/nfs-pvc.yml
 # 
 # kubectl create -f deployment/master-rc.yml
 # 
@@ -60,4 +65,4 @@ az aks create -g kaldi-demos -n kaldi --node-count 3 --enable-vmss --enable-clus
 #     MASTER_STATE=$(kubectl get service master-service | grep -i pending)
 # done
 # 
-# # kubectl create -f deployment/worker-rc.yml
+# kubectl create -f deployment/worker-rc.yml
