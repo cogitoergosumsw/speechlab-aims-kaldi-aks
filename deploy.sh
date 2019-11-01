@@ -5,6 +5,12 @@ az feature register --name VMSSPreview --namespace Microsoft.ContainerService
 
 az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | awk '{print $2}'| sed -n 3p
 
+# Install the aks-preview extension
+az extension add --name aks-preview
+
+# Update the extension to make sure you have the latest version installed
+az extension update --name aks-preview
+
 state=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | grep -i registered)
 
 while [[ -z $state ]]
@@ -18,7 +24,6 @@ done
 echo $state
 
 az provider register --namespace Microsoft.ContainerService
-
 
 az group create --name kaldi-demos --location southeastasia
 
