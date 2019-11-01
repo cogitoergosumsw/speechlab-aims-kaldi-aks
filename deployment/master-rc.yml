@@ -19,3 +19,10 @@ spec:
           image: wudaown/docker-kaldi-master:1.0.0
           ports:
             - containerPort: 80
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '2G'
+            limits:
+              cpu: '300m'
+              memory: '4G'

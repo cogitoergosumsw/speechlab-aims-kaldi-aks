@@ -30,6 +30,9 @@ spec:
             requests:
               cpu: '200m'
               memory: '2G'
+            limits:
+              cpu: '300m'
+              memory: '4G'
       volumes:
         - name: azurefileshare
           azureFile:
