@@ -8,6 +8,9 @@ spec:
     storage: 10Gi
   accessModes:
     - ReadOnlyMany
+  mountOptions:
+    - hard
+    - nfsvers=4.1
   nfs:
     server: NFS_CLUSTER_IP
     path: "/"
