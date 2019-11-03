@@ -53,7 +53,7 @@ sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
  
 kubectl create -f pv/nfs-pv.yml
  
-# rm nfs-pv.yml
+rm pv/nfs-pv.yml
 
 kubectl create -f pvc/nfs-pvc.yml
 
