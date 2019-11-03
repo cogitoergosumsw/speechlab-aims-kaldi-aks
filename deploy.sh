@@ -27,7 +27,7 @@ done
 echo $state
 
 KUBE_NAME='kaldi-feature-test'
-RESOURCE_GROUP='kaldi-demos'
+RESOURCE_GROUP='kaldi-test'
 
 az provider register --namespace Microsoft.ContainerService
 

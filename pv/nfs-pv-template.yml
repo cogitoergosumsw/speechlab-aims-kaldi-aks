@@ -5,11 +5,10 @@ metadata:
   name: nfs
 spec:
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   accessModes:
     - ReadOnlyMany
   mountOptions:
-    - hard
     - nfsvers=4.1
   nfs:
     server: NFS_CLUSTER_IP
