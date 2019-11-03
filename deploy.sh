@@ -33,7 +33,9 @@ az provider register --namespace Microsoft.ContainerService
 
 az group create --name $RESOURCE_GROUP --location southeastasia
 
-az aks create -g $RESOURCE_GROUP -n $KUBE_NAME --node-count 5 --enable-vmss --enable-cluster-autoscaler --min-count 5 --max-count 8 --node-vm-size 'Standard_E2s_v3'
+az aks create -g $RESOURCE_GROUP -n $KUBE_NAME \
+--node-count 5 --enable-vmss --enable-cluster-autoscaler \
+--min-count 5 --max-count 8 --node-vm-size 'Standard_E2s_v3'
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
@@ -45,11 +47,11 @@ kubectl create -f services/nfs-server-service.yml
 
 NFS_IP=$(kubectl get service nfs-server | awk '{print $3}' | sed -n 2p)
  
-sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > nfs-pv.yml
+sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
  
-kubectl create -f nfs-pv.yml
+kubectl create -f pv/nfs-pv.yml
  
-rm nfs-pv.yml
+# rm nfs-pv.yml
 
 kubectl create -f pvc/nfs-pvc.yml
 
