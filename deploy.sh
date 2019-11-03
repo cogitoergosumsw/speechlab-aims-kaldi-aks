@@ -39,6 +39,8 @@ az aks create -g $RESOURCE_GROUP -n $KUBE_NAME \
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
+kubectl create -f secret/secret.yml
+
 kubectl create -f pvc/nfs-server-azure-pvc.yml
  
 kubectl create -f rc/nfs-server-rc.yml
