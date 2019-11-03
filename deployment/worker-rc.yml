@@ -34,7 +34,7 @@ spec:
               cpu: '300m'
               memory: '4G'
           securityContext:
-            allowPrivilegeEscalation: true
+            privileged: true
       volumes:
         - name: nfs
           persistentVolumeClaim:
