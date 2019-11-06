@@ -9,6 +9,7 @@ metadata:
     demo: nfs-pv-provisioning
 spec:
   accessModes: [ "ReadWriteOnce" ]
+  storageClassName: ""
   resources:
     requests:
       storage: 20Gi
