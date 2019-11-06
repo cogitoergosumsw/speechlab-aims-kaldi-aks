@@ -26,12 +26,29 @@ do
 done
 echo $state
 
-KUBE_NAME='kaldi-feature-test'
-RESOURCE_GROUP='kaldi-test'
+KUBE_NAME=kaldi-feature-test
+RESOURCE_GROUP=kaldi-test
+STORAGE_ACCOUNT_NAME=kalditeststorage
+LOCATION=southeastasia
+MODEL_SHARE=model-azurefile-share
 
 az provider register --namespace Microsoft.ContainerService
 
-az group create --name $RESOURCE_GROUP --location southeastasia
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Standard_LRS --kind StorageV2
+
+export AZURE_STORAGE_CONNECTION_STRING=`az storage account show-connection-string -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -o tsv`
+
+# Create the file share
+az storage share create -n $MODEL_SHARE --connection-string $AZURE_STORAGE_CONNECTION_STRING
+
+# Get storage account key
+STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --account-name $STORAGE_ACCOUNT_NAME --query "[0].value" -o tsv)
+
+# Echo storage account name and key
+echo Storage account name: $STORAGE_ACCOUNT_NAME
+echo Storage account key: $STORAGE_KEY
 
 az aks create -g $RESOURCE_GROUP -n $KUBE_NAME \
 --node-count 5 --enable-vmss --enable-cluster-autoscaler \
@@ -39,7 +56,9 @@ az aks create -g $RESOURCE_GROUP -n $KUBE_NAME \
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
-kubectl create -f secret/secret.yml
+kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
+
+# kubectl create -f secret/secret.yml
 
 kubectl create -f pvc/nfs-server-azure-pvc.yml
  
