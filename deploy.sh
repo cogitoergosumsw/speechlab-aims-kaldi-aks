@@ -60,8 +60,9 @@ kubectl create secret generic volume-azurefile-storage-secret --from-literal=azu
 
 # kubectl create -f secret/secret.yml
 
-kubectl create -f pvc/nfs-server-azure-pvc.yml
- 
+# kubectl create -f pvc/nfs-server-azure-pvc.yml
+kubectl create -f pvc/nfs-pvc.yml
+
 kubectl create -f rc/nfs-server-rc.yml
 
 kubectl create -f services/nfs-server-service.yml 
@@ -73,8 +74,6 @@ sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
 kubectl create -f pv/nfs-pv.yml
  
 rm pv/nfs-pv.yml
-
-kubectl create -f pvc/nfs-pvc.yml
 
 kubectl create -f deployment/master-rc.yml
 
