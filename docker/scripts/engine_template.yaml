@@ -1,0 +1,80 @@
+# You have to download TEDLIUM "online nnet2" models in order to use this sample
+# Run download-tedlium-nnet2.sh in '/home/appuser/opt' to download them.
+use-nnet2: True
+decoder:
+    # All the properties nested here correspond to the kaldinnet2onlinedecoder GStreamer plugin properties.
+    # Use gst-inspect-1.0 ./libgstkaldionline2.so kaldinnet2onlinedecoder to discover the available properties
+    nnet-mode: 3
+    use-threaded-decoder:  true
+    model : /home/appuser/opt/models/{{MODEL_DIR}}/final.mdl
+    word-syms : /home/appuser/opt/models/{{MODEL_DIR}}/words.txt
+    fst : /home/appuser/opt/models/{{MODEL_DIR}}/HCLG.fst
+    mfcc-config : /home/appuser/opt/models/{{MODEL_DIR}}/conf/mfcc.conf
+    ivector-extraction-config : /home/appuser/opt/models/{{MODEL_DIR}}/conf/ivector_extractor.conf
+    max-active: 10000
+    beam: 10.0
+    lattice-beam: 6.0
+    acoustic-scale: 1
+    do-endpointing : true
+    endpoint-silence-phones : "1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20"
+    traceback-period-in-secs: 0.25
+    chunk-length-in-secs: 0.25
+    num-nbest: 10
+
+    frame-subsampling-factor: 3
+    #Additional functionality that you can play with:
+    #lm-fst:  /home/appuser/opt/models/gstream-online2/english/tedlium_nnet_ms_sp_online/G.fst
+    #big-lm-const-arpa: /home/appuser/opt/models/gstream-online2/english/tedlium_nnet_ms_sp_online/G.carpa
+    #phone-syms: /home/appuser/opt/models/gstream-online2/english/tedlium_nnet_ms_sp_online/phones.txt
+    #word-boundary-file: /home/appuser/opt/models/gstream-online2/english/tedlium_nnet_ms_sp_online/word_boundary.int
+    #do-phone-alignment: true
+out-dir: tmp
+
+use-vad: False
+silence-timeout: 10
+
+# Just a sample post-processor that appends "." to the hypothesis
+#post-processor: perl -npe 'BEGIN {use IO::Handle; STDOUT->autoflush(1);} s/(.*)/\1./;'
+
+# A sample full post processor that add a confidence score to 1-best hyp and deletes other n-best hyps
+#full-post-processor: ./sample_full_post_processor.py
+
+logging:
+    version : 1
+    disable_existing_loggers: False
+    formatters:
+        simpleFormater:
+            format: '%(asctime)s - %(levelname)7s: %(name)10s: %(message)s'
+            datefmt: '%Y-%m-%d %H:%M:%S'
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: simpleFormater
+            level: DEBUG
+        debug_file_handler:
+            class: logging.handlers.RotatingFileHandler
+            level: DEBUG
+            formatter: simpleFormater
+            filename: verbose.log
+            maxBytes: 10485760 #10Mb
+            backupCount: 20
+            encoding: utf8
+        info_file_handler:
+            class: logging.handlers.RotatingFileHandler
+            level: INFO
+            formatter: simpleFormater
+            filename: info.log
+            maxBytes: 10485760 #10Mb
+            backupCount: 20
+            encoding: utf8
+        error_file_handler:
+            class: logging.handlers.RotatingFileHandler
+            level: ERROR
+            formatter: simpleFormater
+            filename: error.log
+            maxBytes: 10485760 #10Mb
+            backupCount: 20
+            encoding: utf8
+    root:
+        level: DEBUG
+        handlers: [console, debug_file_handler, info_file_handler, error_file_handler]
