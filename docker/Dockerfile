@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y  \
 
 RUN python -m pip install --upgrade pip setuptools wheel
 
-RUN pip3 install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1==0.4.6 schedule==0.6.0
+RUN pip3 install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1==0.4.6 schedule==0.6.0 prometheus_client
 
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
