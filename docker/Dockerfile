@@ -1,5 +1,6 @@
-FROM debian:8
-MAINTAINER Eduardo Silva <zedudu@gmail.com>
+FROM debian:9
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+MAINTAINER Seng Wee
 
 RUN apt-get update && apt-get install -y  \
     supervisor \
@@ -34,11 +35,10 @@ RUN apt-get update && apt-get install -y  \
     zlib1g-dev && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
-    pip install ws4py==0.3.2 && \
-    pip install tornado && \    
     ln -s /usr/bin/python2.7 /usr/bin/python ; ln -s -f bash /bin/sh
 
-WORKDIR /opt
+RUN python -m pip install --upgrade pip setuptools wheel
+RUN pip3 install ws4py==0.5.1 tornado==5.1.1 requests pyasn1==0.4.6 schedule==0.6.0
 
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
@@ -46,6 +46,13 @@ RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     ./configure && make && make install && \
     echo "/usr/local/lib" >> /etc/ld.so.conf.d/jansson.conf && ldconfig && \
     rm /opt/jansson-2.7.tar.bz2 && rm -rf /opt/jansson-2.7
+
+RUN useradd --create-home appuser
+# map to the model directory dynamically, so that no need to edit the model files
+RUN ln -s /home/appuser/opt/models /opt/models 
+USER appuser
+RUN mkdir -p /home/appuser/opt
+WORKDIR /home/appuser/opt
 
 RUN git clone https://github.com/kaldi-asr/kaldi && \
     cd /opt/kaldi/tools && \
