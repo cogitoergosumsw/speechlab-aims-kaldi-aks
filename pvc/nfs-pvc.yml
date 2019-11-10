@@ -10,3 +10,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector: 
+    matchLabels:
+      type: nfs

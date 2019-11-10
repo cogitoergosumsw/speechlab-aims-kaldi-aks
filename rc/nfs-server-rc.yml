@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nfs-server
-        image: k8s.gcr.io/volume-nfs:0.8
+        image: itsthenetwork/nfs-server-alpine
         ports:
           - name: nfs
             containerPort: 2049
