@@ -17,7 +17,7 @@ import threading
 import functools
 # for python 2
 #from Queue import Queue
-# for pythoh3
+# for python 3
 from queue import Queue
 import tornado.ioloop
 import tornado.options
