@@ -33,11 +33,11 @@ az provider register -n Microsoft.ContainerService
 az provider show -n Microsoft.ContainerService | grep registrationState
 
 VMSS_STATE=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | grep -i registered)
-AKS_LOAD_BALANCER_STATE=$($(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKSAzureStandardLoadBalancer')].{Name:name,State:properties.state}" | grep -i registered))
+AKS_LOAD_BALANCER_STATE=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKSAzureStandardLoadBalancer')].{Name:name,State:properties.state}" | grep -i registered)
 
 while [[ -z $VMSS_STATE ]]
 do
-    state=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | grep -i registered)
+    VMSS_STATE=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/VMSSPreview')].{Name:name,State:properties.state}" | grep -i registered)
     echo 'Waiting for Microsoft.ContainerService/VMSSPreview registration'
     sleep 3
     clear
@@ -47,7 +47,7 @@ echo $VMSS_STATE
 
 while [[ -z $AKS_LOAD_BALANCER_STATE ]]
 do
-    state=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKSAzureStandardLoadBalancer')].{Name:name,State:properties.state}" | grep -i registered)
+    AKS_LOAD_BALANCER_STATE=$(az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKSAzureStandardLoadBalancer')].{Name:name,State:properties.state}" | grep -i registered)
     echo 'Waiting for Microsoft.ContainerService/AKSAzureStandardLoadBalancer registration'
     sleep 3
     clear
@@ -82,7 +82,6 @@ az aks create \
 --enable-cluster-autoscaler \
 --min-count 5 \
 --max-count 8 \
---enable-rbac \
 --node-vm-size Standard_B4ms \
 --load-balancer-sku standard 
 
@@ -91,11 +90,13 @@ az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-exis
 kubectl create namespace $NAMESPACE
 
 # installing helm
-cd /tmp
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
-chmod u+x install-helm.sh
-./install-helm.sh
-helm init
+# (run on own local machine first)
+
+# cd /tmp
+# curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
+# chmod u+x install-helm.sh
+# ./install-helm.sh
+# helm init
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
