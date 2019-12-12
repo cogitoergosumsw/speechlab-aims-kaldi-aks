@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "speechlab.master.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "speechlab.master.name" . }}
+    helm.sh/chart: {{ include "speechlab.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }} 
+  # sessionAffinity: ClientIP
+  # sessionAffinityConfig:
+  #   clientIP:
+  #     timeoutSeconds: 900
+  type: {{ .Values.service.type }}
+  ports:
+    - protocol: TCP
+      {{- if eq .Values.service.enablehttps true}}
+      port: 443
+      {{- else }}
+      port: 80
+      {{- end}}
+      targetPort: {{ .Values.service.port }}    
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "speechlab.master.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}  
+

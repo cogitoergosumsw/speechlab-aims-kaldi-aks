@@ -1,0 +1,10 @@
+apiVersion: v1
+appVersion: "1.0"
+name: speechlab-online
+version: 0.1.0
+kubeVersion: ">1.10.0"
+description: "Helm chart for speechlab master and worker deployment"
+maintainers:
+  - name: Wei Yih
+    email: weiyih@aisingapore.org
+tillerVersion: ">2.10.0"

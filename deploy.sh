@@ -10,6 +10,7 @@ export STORAGE_ACCOUNT_NAME=kalditeststorage
 export LOCATION=southeastasia
 export MODEL_SHARE=model-azurefile-share
 export NAMESPACE=kaldi-test
+export CONTAINER_REGISTRY=kalditest
 
 az provider register --namespace Microsoft.ContainerService
 
@@ -57,6 +58,8 @@ echo $AKS_LOAD_BALANCER_STATE
 # refresh the registration
 az provider register --namespace Microsoft.ContainerService
 
+az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard --admin-enabled true --default-action Allow
+
 az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Standard_LRS --kind StorageV2
 
 export AZURE_STORAGE_CONNECTION_STRING=`az storage account show-connection-string -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -o tsv`
@@ -83,9 +86,21 @@ az aks create \
 --node-vm-size Standard_B4ms \
 --load-balancer-sku standard 
 
-az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
+az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
 
 kubectl create namespace $NAMESPACE
+
+# installing helm
+cd /tmp
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
+chmod u+x install-helm.sh
+./install-helm.sh
+helm init
+
+# installing tiller, part of helm installation
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
 
 kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
 
