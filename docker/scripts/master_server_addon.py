@@ -5,7 +5,7 @@ import random, string, os, sys
 
 import logging
 
-IMAGE = "aimspace.azurecr.io/speechlab-online-scaled"
+IMAGE = "kalditest.azurecr.io/kaldi-test-scaled"
 AZURE_STORAGE_ACCOUNT = os.getenv("AZURE_STORAGE_ACCOUNT", False)
 AZURE_STORAGE_ACCESS_KEY = os.getenv("AZURE_STORAGE_ACCESS_KEY", False) 
 AZURE_CONTAINER = os.getenv("AZURE_CONTAINER", False)  

@@ -11,8 +11,7 @@ export LOCATION=southeastasia
 export MODEL_SHARE=model-azurefile-share
 export NAMESPACE=kaldi-test
 export CONTAINER_REGISTRY=kalditest
-
-az provider register --namespace Microsoft.ContainerService
+export DOCKER_IMAGE_NAME=kaldi-test-scaled
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
@@ -27,7 +26,7 @@ az extension update --name aks-preview
 az feature register --namespace "Microsoft.ContainerService" --name "AKSAzureStandardLoadBalancer"
 
 # required to get the change propagated
-az provider register -n Microsoft.ContainerService
+az provider register --namespace Microsoft.ContainerService
 
 # wait until "namespace": "Microsoft.ContainerService", "registrationState": "Registered",
 az provider show -n Microsoft.ContainerService | grep registrationState
@@ -58,7 +57,7 @@ echo $AKS_LOAD_BALANCER_STATE
 # refresh the registration
 az provider register --namespace Microsoft.ContainerService
 
-az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard --admin-enabled true --default-action Allow
+az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard
 
 az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Standard_LRS --kind StorageV2
 
@@ -74,6 +73,9 @@ STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --ac
 echo Storage account name: $STORAGE_ACCOUNT_NAME
 echo Storage account key: $STORAGE_KEY
 
+sed -i "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml > docker/secret/run_kubernetes_secret.yaml
+sed -i "s/AZURE_STORAGE_ACCESS_KEY_DATUM/$STORAGE_KEY/g" docker/secret/run_kubernetes_secret.yaml
+
 az aks create \
 -g $RESOURCE_GROUP \
 -n $KUBE_NAME \
@@ -85,7 +87,7 @@ az aks create \
 --node-vm-size Standard_B4ms \
 --load-balancer-sku standard 
 
-az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
+az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
 kubectl create namespace $NAMESPACE
 
@@ -103,35 +105,51 @@ kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 
-kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
+az acr login -n kalditest
+docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
+
+# after filling in the azure storage account details...
+#########################################################
+kubectl apply -f docker/secret/run_kubernetes_secret.yaml
+
+# kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
+
+# Create a service account to access private azure docker registry
+##################################################################
+kubectl create secret docker-registry azure-cr-secret \
+--docker-server=https://kalditest.azurecr.io \
+--docker-username=kalditest \
+--docker-password=kalditestpassword \
+--namespace $NAMESPACE
 
 # kubectl create -f secret/secret.yml
 
 # kubectl create -f pvc/nfs-server-azure-pvc.yml
-kubectl create -f pvc/nfs-pvc.yml
+# kubectl create -f pvc/nfs-pvc.yml
 
-kubectl create -f rc/nfs-server-rc.yml
+# kubectl create -f rc/nfs-server-rc.yml
 
-kubectl create -f services/nfs-server-service.yml
+# kubectl create -f services/nfs-server-service.yml
 
-NFS_IP=$(kubectl get service nfs-server | awk '{print $3}' | sed -n 2p)
+# NFS_IP=$(kubectl get service nfs-server | awk '{print $3}' | sed -n 2p)
 
-sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
+# sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
 
-kubectl create -f pv/nfs-pv.yml
+# kubectl create -f pv/nfs-pv.yml
 
-rm pv/nfs-pv.yml
+# rm pv/nfs-pv.yml
 
-kubectl create -f deployment/master-rc.yml
+# kubectl create -f deployment/master-rc.yml
 
-kubectl create -f services/master-svc.yml
+# kubectl create -f services/master-svc.yml
 
-MASTER_STATE=$(kubectl get service master-service | grep -i pending)
-while [[ ! -z $MASTER_STATE ]]
-do
-    sleep 10
-    echo 'waiting for master to init'
-    MASTER_STATE=$(kubectl get service master-service | grep -i pending)
-done
+# MASTER_STATE=$(kubectl get service master-service | grep -i pending)
+# while [[ ! -z $MASTER_STATE ]]
+# do
+#     sleep 10
+#     echo 'waiting for master to init'
+#     MASTER_STATE=$(kubectl get service master-service | grep -i pending)
+# done
 
-kubectl create -f deployment/worker-rc.yml
+# kubectl create -f deployment/worker-rc.yml
