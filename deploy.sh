@@ -126,6 +126,9 @@ kubectl create secret docker-registry azure-cr-secret \
 --docker-password=kalditestpassword \
 --namespace $NAMESPACE
 
+# Deploy to Kubernetes cluster
+helm install --name=$KUBE_NAME --namespace=$NAMESPACE docker/helm/speechlab/
+
 # kubectl create -f secret/secret.yml
 
 # kubectl create -f pvc/nfs-server-azure-pvc.yml
