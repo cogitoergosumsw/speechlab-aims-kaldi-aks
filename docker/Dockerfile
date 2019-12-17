@@ -147,7 +147,7 @@ RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/l
 RUN chmod +x ./kubectl
 
 
-COPY --chown=appuser:appuser docker/scripts/cronjob.py docker/scripts/cronjob_delete_kubenetes_jobs.sh /home/appuser/opt/
+COPY --chown=appuser:appuser scripts/cronjob.py scripts/cronjob_delete_kubernetes_jobs.sh /home/appuser/opt/
 
 COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
 
