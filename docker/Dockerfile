@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y  \
     wget \
     vim \
     unzip \
+    apt-utils \
+    python-dateutil \
     zlib1g-dev && \
     apt-get clean autoclean && \
     apt-get autoremove -y
@@ -56,11 +58,12 @@ RUN wget https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-p
 RUN dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
 RUN apt-get install -y apt-transport-https
 RUN apt-get update
-RUN apt-get install -y blobfuse fuse
+RUN apt-get install -y blobfuse fuse 
 
 RUN apt-get install sudo
 RUN echo 'appuser ALL=(root) NOPASSWD:SETENV:/usr/bin/blobfuse' >> /etc/sudoers
 
+RUN pip3 install python-dateutil
 RUN git clone --recursive https://github.com/kubernetes-client/python.git  --branch release-10.0 && \
     cd /python && \
     python3 setup.py install && \

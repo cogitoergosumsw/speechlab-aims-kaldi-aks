@@ -73,8 +73,8 @@ STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --ac
 echo Storage account name: $STORAGE_ACCOUNT_NAME
 echo Storage account key: $STORAGE_KEY
 
-sed -i "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml > docker/secret/run_kubernetes_secret.yaml
-sed -i "s/AZURE_STORAGE_ACCESS_KEY_DATUM/$STORAGE_KEY/g" docker/secret/run_kubernetes_secret.yaml
+sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml > docker/secret/run_kubernetes_secret.yaml
+sed "s,AZURE_STORAGE_ACCESS_KEY_DATUM,$STORAGE_KEY,g" docker/secret/run_kubernetes_secret.yaml
 
 az aks create \
 -g $RESOURCE_GROUP \
@@ -105,8 +105,9 @@ kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
 az acr login -n kalditest
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
+docker tag $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 # after filling in the azure storage account details...
