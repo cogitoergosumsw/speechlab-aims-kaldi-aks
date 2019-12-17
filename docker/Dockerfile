@@ -28,6 +28,9 @@ RUN apt-get update && apt-get install -y  \
     python3-yaml \
     python-simplejson \
     python3-simplejson \ 
+    python-requests \
+    python-pyasn1 \
+    python3-pyasn1 \
     python-gi \
     python3-gi \
     sox \
@@ -41,9 +44,11 @@ RUN apt-get update && apt-get install -y  \
     apt-get clean autoclean && \
     apt-get autoremove -y
 
-RUN python -m pip install --upgrade pip setuptools wheel
+RUN python -m pip install --upgrade pip setuptools wheel pyasn1
+RUN python3 -m pip install --upgrade pip setuptools wheel pyasn1
 
-RUN pip3 install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1==0.4.6 schedule==0.6.0 prometheus_client
+RUN pip install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1 schedule==0.6.0 prometheus_client setuptools
+RUN pip3 install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1 schedule==0.6.0 prometheus_client setuptools
 
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
@@ -64,7 +69,7 @@ RUN apt-get install sudo
 RUN echo 'appuser ALL=(root) NOPASSWD:SETENV:/usr/bin/blobfuse' >> /etc/sudoers
 
 RUN pip3 install python-dateutil
-RUN git clone --recursive https://github.com/kubernetes-client/python.git  --branch release-10.0 && \
+RUN git clone --recursive https://github.com/kubernetes-client/python.git && \
     cd /python && \
     python3 setup.py install && \
     python setup.py install && \
@@ -142,7 +147,7 @@ RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/l
 RUN chmod +x ./kubectl
 
 
-COPY --chown=appuser:appuser scripts/cronjob.py scripts/cronjob_delete_kubenetes_jobs.sh /home/appuser/opt/
+COPY --chown=appuser:appuser docker/scripts/cronjob.py docker/scripts/cronjob_delete_kubenetes_jobs.sh /home/appuser/opt/
 
 COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
 
