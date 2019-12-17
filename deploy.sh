@@ -106,8 +106,7 @@ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admi
 helm init --service-account tiller
 
 az acr login -n kalditest
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
-docker tag $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
+docker build -t $DOCKER_IMAGE_NAME:$CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 # after filling in the azure storage account details...
