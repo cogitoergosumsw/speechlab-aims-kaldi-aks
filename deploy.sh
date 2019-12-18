@@ -95,13 +95,16 @@ az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 kubectl create namespace $NAMESPACE
 
 # installing helm
-# (run on own local machine first)
+# (preferably run on own local machine first)
 
-# cd /tmp
-# curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
-# chmod u+x install-helm.sh
-# ./install-helm.sh
-# helm init
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
+
+# create new static IP address for values.yaml
+az network public-ip create --resource-group $RESOURCE_GROUP --name publicIP --sku Standard --allocation-method Static
+PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name publicIP | grep -oP '(?<="ipAddress": ")[^"]*')
+sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/speechlab/values.yaml
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
