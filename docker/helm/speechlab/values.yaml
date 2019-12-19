@@ -1,5 +1,6 @@
 models:  
-  SingaporeCS_0519NNET3: 1
+  SingaporeEnglish_0519NNET3: 1
+  SingaporeCS_0519NNET3: 0
   SingaporeMandarin_0519NNET3: 0
   
 image:
