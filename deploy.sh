@@ -12,6 +12,7 @@ export MODEL_SHARE=model-azurefile-share
 export NAMESPACE=kaldi-test
 export CONTAINER_REGISTRY=kalditest
 export DOCKER_IMAGE_NAME=kaldi-test-scaled
+export AZURE_CONTAINER_NAME=kaldi-models
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
@@ -72,6 +73,11 @@ STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --ac
 # Echo storage account name and key
 echo Storage account name: $STORAGE_ACCOUNT_NAME
 echo Storage account key: $STORAGE_KEY
+
+az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
+
+# TODO: edit this part to upload the correct model files
+az storage blob upload --container-name $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
 
 sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml > docker/secret/run_kubernetes_secret.yaml
 sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/run_kubernetes_secret.yaml

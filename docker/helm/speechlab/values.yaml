@@ -1,6 +1,6 @@
-models:  
-  SingaporeEnglish_0519NNET3: 1
-  SingaporeCS_0519NNET3: 0
+models:
+  SingaporeEnglish_0519NNET3: 1  
+  SingaporeCS_0519NNET3: 1
   SingaporeMandarin_0519NNET3: 0
   
 image:
@@ -20,7 +20,7 @@ service:
 
   #loadBalancerIP: 137.116.136.155 # onlinespeechlabtest.southeastasia.cloudapp.azure.com
   #loadBalancerIP: 13.76.89.12 # speechlab-online.southeastasia.cloudapp.azure.com
-  loadBalancerIP: 20.43.161.209
+  loadBalancerIP: 20.43.176.13
   enablehttps: false
 
 # resources:
