@@ -118,9 +118,11 @@ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp
 chmod u+x /tmp/install-helm.sh
 /tmp/install-helm.sh
 
+export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
+
 # create new static IP address for values.yaml
-az network public-ip create --resource-group $RESOURCE_GROUP --name publicIP --sku Standard --allocation-method Static
-PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name publicIP | grep -oP '(?<="ipAddress": ")[^"]*')
+az network public-ip create --resource-group $RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method Static
+PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name $STATIC_PUBLIC_IP_NAME | grep -oP '(?<="ipAddress": ")[^"]*')
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/speechlab/values.yaml
 
 # create Load Balancer
@@ -193,3 +195,5 @@ helm install --name=$KUBE_NAME --namespace=$NAMESPACE docker/helm/speechlab/
 # done
 
 # kubectl create -f deployment/worker-rc.yml
+
+exit 0
