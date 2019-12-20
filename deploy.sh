@@ -58,7 +58,7 @@ echo $AKS_LOAD_BALANCER_STATE
 # refresh the registration
 az provider register --namespace Microsoft.ContainerService
 
-az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard
+az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard --admin-enabled true
 
 az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Standard_LRS --kind StorageV2
 
@@ -123,28 +123,42 @@ az network public-ip create --resource-group $RESOURCE_GROUP --name publicIP --s
 PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name publicIP | grep -oP '(?<="ipAddress": ")[^"]*')
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/speechlab/values.yaml
 
+# create Load Balancer
+# az network lb create --resource-group $RESOURCE_GROUP --name kaldi-test-lb --public-ip-address $PUBLIC_IP_ADDRESS --sku Standard
+
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 
-az acr login -n kalditest
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest docker
-docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest
-
-# after filling in the azure storage account details...
-#########################################################
-kubectl apply -f docker/secret/run_kubernetes_secret.yaml
-
-# kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
+# get docker registry password
+CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
+echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
 # Create a service account to access private azure docker registry
 ##################################################################
 kubectl create secret docker-registry azure-cr-secret \
 --docker-server=https://kalditest.azurecr.io \
---docker-username=kalditest \
---docker-password=kalditestpassword \
+--docker-username=$CONTAINER_REGISTRY \
+--docker-password=$CONTAINER_REGISTRY_PASSWORD \
 --namespace $NAMESPACE
+
+# after filling in the azure storage account details...
+#########################################################
+kubectl apply -f docker/secret/run_kubernetes_secret.yaml
+
+az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest docker
+docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest
+az acr build --image $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest --registry $CONTAINER_REGISTRY docker/
+
+# kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
+
+helm package docker/helm/speechlab/
+
+az acr helm push --name kalditest --password kalditestpassword docker/helm/speechlab/
 
 # Deploy to Kubernetes cluster
 helm install --name=$KUBE_NAME --namespace=$NAMESPACE docker/helm/speechlab/
