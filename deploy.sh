@@ -76,8 +76,19 @@ echo Storage account key: $STORAGE_KEY
 
 az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
 
-# TODO: edit this part to upload the correct model files
-az storage blob upload --container-name $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
+# prompt to put the models in the models directory
+NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
+if [ $NUM_MODELS -gt 1 ]
+then
+    az storage blob upload-batch -d $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME -s models/
+else
+    printf "\n"
+    printf "##########################################################################\n"
+    echo "Please put at least one model in the ./models directory before continuing"
+    printf "##########################################################################\n"
+    
+    exit 1
+fi
 
 sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml > docker/secret/run_kubernetes_secret.yaml
 sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/run_kubernetes_secret.yaml
