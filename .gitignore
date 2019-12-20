@@ -1,3 +1,5 @@
 .idea
 .vscode
 docker/ssl/
+models/*
+!models/README.md

@@ -12,7 +12,7 @@ export MODEL_SHARE=model-azurefile-share
 export NAMESPACE=kaldi-test
 export CONTAINER_REGISTRY=kalditest
 export DOCKER_IMAGE_NAME=kaldi-test-scaled
-export AZURE_CONTAINER_NAME=kaldi-models
+export AZURE_CONTAINER_NAME=online-models
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
