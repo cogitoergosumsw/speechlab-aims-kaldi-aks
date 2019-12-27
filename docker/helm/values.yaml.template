@@ -4,7 +4,7 @@ models:
   SingaporeMandarin_0519NNET3: 0
   
 image:
-  repository: kalditest.azurecr.io/kaldi-test-scaled
+  repository: kalditest.azurecr.io/kalditestscaled
   tag: latest
   pullPolicy: Always
   pullSecrets: azure-cr-secret

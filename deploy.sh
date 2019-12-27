@@ -11,7 +11,7 @@ export LOCATION=southeastasia
 export MODEL_SHARE=model-azurefile-share
 export NAMESPACE=kaldi-test
 export CONTAINER_REGISTRY=kalditest
-export DOCKER_IMAGE_NAME=kaldi-test-scaled
+export DOCKER_IMAGE_NAME=kalditestscaled
 export AZURE_CONTAINER_NAME=online-models
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
@@ -96,6 +96,16 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/run_kuber
 sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/docker-compose-local_template.env > docker/secret/docker-compose-local.env
 sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-compose-local.env
 
+# get docker registry password
+export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
+echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
+
+# docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+sleep 10
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest docker
+docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest
+
 az aks create \
 -g $RESOURCE_GROUP \
 -n $KUBE_NAME \
@@ -105,7 +115,7 @@ az aks create \
 --min-count 5 \
 --max-count 8 \
 --node-vm-size Standard_B4ms \
---load-balancer-sku standard 
+--load-balancer-sku standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
 
@@ -133,9 +143,6 @@ kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 
-# get docker registry password
-CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
-echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
 # Create a service account to access private azure docker registry
 ##################################################################
@@ -149,21 +156,18 @@ kubectl create secret docker-registry azure-cr-secret \
 #########################################################
 kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 
-az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest docker
-docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest
-az acr build --image $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest --registry $CONTAINER_REGISTRY docker/
+# az acr build --image $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest --registry $CONTAINER_REGISTRY docker/
 
 # kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
 
-helm package docker/helm/speechlab/
+# helm package docker/helm/speechlab/
 
-az acr helm push --name kalditest --password kalditestpassword docker/helm/speechlab/
+# az acr helm push --name kalditest --password kalditestpassword docker/helm/speechlab/
 
 # Deploy to Kubernetes cluster
-helm install --name=$KUBE_NAME --namespace=$NAMESPACE docker/helm/speechlab/
+sleep 30
+helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
 
 # kubectl create -f secret/secret.yml
 
