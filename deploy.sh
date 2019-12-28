@@ -100,11 +100,10 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-co
 export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
-# docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-sleep 10
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest docker
-docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest
+docker login --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY.azurecr.io 
+# az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
+docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 az aks create \
 -g $RESOURCE_GROUP \
@@ -133,7 +132,7 @@ export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
 # create new static IP address for values.yaml
 az network public-ip create --resource-group $RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method Static
 PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name $STATIC_PUBLIC_IP_NAME | grep -oP '(?<="ipAddress": ")[^"]*')
-sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/speechlab/values.yaml
+sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
 
 # create Load Balancer
 # az network lb create --resource-group $RESOURCE_GROUP --name kaldi-test-lb --public-ip-address $PUBLIC_IP_ADDRESS --sku Standard
@@ -155,9 +154,6 @@ kubectl create secret docker-registry azure-cr-secret \
 # after filling in the azure storage account details...
 #########################################################
 kubectl apply -f docker/secret/run_kubernetes_secret.yaml
-
-
-# az acr build --image $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:latest --registry $CONTAINER_REGISTRY docker/
 
 # kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
 
