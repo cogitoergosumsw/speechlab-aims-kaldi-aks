@@ -20,7 +20,7 @@ service:
 
   #loadBalancerIP: 137.116.136.155 # onlinespeechlabtest.southeastasia.cloudapp.azure.com
   #loadBalancerIP: 13.76.89.12 # speechlab-online.southeastasia.cloudapp.azure.com
-  loadBalancerIP: 20.43.152.88
+  loadBalancerIP: 20.43.170.9
   enablehttps: false
 
 # resources:

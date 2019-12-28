@@ -101,8 +101,9 @@ export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
 docker login --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY.azurecr.io 
-# az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
+docker login --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY.azurecr.io 
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 az aks create \
