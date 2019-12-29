@@ -100,8 +100,7 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-co
 export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
-# docker login --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY.azurecr.io 
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
 az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
@@ -113,10 +112,10 @@ az aks create \
 --enable-cluster-autoscaler \
 --min-count 3 \
 --max-count 8 \
---node-vm-size Standard_B4ms \
+--node-vm-size Standard_D4_v3 \
 --load-balancer-sku standard
 
-az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME
+az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
 
 kubectl create namespace $NAMESPACE
 
@@ -135,8 +134,12 @@ PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $RESOURCE_GROUP -
 # PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name $STATIC_PUBLIC_IP_NAME | grep -oP '(?<="ipAddress": ")[^"]*')
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
 
-# create Load Balancer
-# az network lb create --resource-group $RESOURCE_GROUP --name kaldi-test-lb --public-ip-address $PUBLIC_IP_ADDRESS --sku Standard
+export SP_CLIENT_ID=$(az aks show -g kaldi-test -n $KUBE_NAME --query servicePrincipalProfile.clientId --output tsv)
+export SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+az role assignment create \
+--assignee $SP_CLIENT_ID \
+--role "Contributor" \
+--scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
