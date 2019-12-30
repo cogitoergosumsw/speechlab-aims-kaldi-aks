@@ -13,15 +13,15 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  #type: ClusterIP
-  type: LoadBalancer
+  type: ClusterIP
+  #type: LoadBalancer
   port: 8080
   resourceGroup: kaldi-test
 
 
   #loadBalancerIP: 137.116.136.155 # onlinespeechlabtest.southeastasia.cloudapp.azure.com
   #loadBalancerIP: 13.76.89.12 # speechlab-online.southeastasia.cloudapp.azure.com
-  loadBalancerIP: 20.43.178.133
+  #loadBalancerIP: 20.43.144.171
   enablehttps: false
 
 # resources:

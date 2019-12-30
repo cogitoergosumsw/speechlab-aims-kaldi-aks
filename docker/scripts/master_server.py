@@ -29,15 +29,15 @@ import concurrent.futures
 import settings
 import common
 import master_server_addon
-import prometheus_client as prom
+# import prometheus_client as prom
 
-num_req = prom.Counter('number_of_request_receive_by_master',
-                       'number of request receive by master')
-num_worker = prom.Gauge('number_of_worker_available',
-                        'number of worker available')
-num_req_reject = prom.Counter(
-    'number_of_request_reject', 'number_of_request_reject')
-prom.start_http_server(8080)
+# num_req = prom.Counter('number_of_request_receive_by_master',
+#                        'number of request receive by master')
+# num_worker = prom.Gauge('number_of_worker_available',
+#                         'number of worker available')
+# num_req_reject = prom.Counter(
+#     'number_of_request_reject', 'number_of_request_reject')
+# prom.start_http_server(8080)
 
 
 class Application(tornado.web.Application):
@@ -388,8 +388,8 @@ class DecoderSocketHandler(tornado.websocket.WebSocketHandler):
         self.worker = None
 
         # for Prometheus monitoring
-        num_worker.set(len(self.application.available_workers))
-        num_req.inc(1)
+        # num_worker.set(len(self.application.available_workers))
+        # num_req.inc(1)
         model = self.get_argument("model", "UNKNOWN_MODEL", True)
         logging.info("client with ws requsted model:"+str(model))
         try:
@@ -429,7 +429,7 @@ class DecoderSocketHandler(tornado.websocket.WebSocketHandler):
                 "%s: No worker available for client request" % self.id)
             event = dict(status=common.STATUS_NOT_AVAILABLE,
                          message="No decoder available, try again 60 seconds later")
-            num_req_reject.inc(1)
+            # num_req_reject.inc(1)
             self.send_event(event)
             self.close()
 

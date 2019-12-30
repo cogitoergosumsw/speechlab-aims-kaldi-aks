@@ -101,7 +101,9 @@ export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
 docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
+sleep 3
 az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+sleep 3
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 az aks create \
@@ -135,11 +137,11 @@ PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $RESOURCE_GROUP -
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
 
 export SP_CLIENT_ID=$(az aks show -g kaldi-test -n $KUBE_NAME --query servicePrincipalProfile.clientId --output tsv)
-export SUBSCRIPTION_ID=$(az account show --query id --output tsv)
-az role assignment create \
---assignee $SP_CLIENT_ID \
---role "Contributor" \
---scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
+# export SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+# az role assignment create \
+# --assignee $SP_CLIENT_ID \
+# --role "Contributor" \
+# --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
