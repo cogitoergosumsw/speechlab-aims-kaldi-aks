@@ -104,7 +104,7 @@ docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
 sleep 3
 docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-sleep 3
+sleep 5
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 az aks create \
@@ -130,12 +130,21 @@ chmod u+x /tmp/install-helm.sh
 /tmp/install-helm.sh
 
 export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
+export AKS_NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $KUBE_NAME --query nodeResourceGroup -o tsv)
+export PUBLIC_DNS_NAME="kaldi-feature-test"
 
 # create new static IP address for values.yaml
-az network public-ip create --resource-group $RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method Static
-PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query ipAddress --output tsv)
+az network public-ip create --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method static
+sleep 3
+PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query ipAddress --output tsv)
 # PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name $STATIC_PUBLIC_IP_NAME | grep -oP '(?<="ipAddress": ")[^"]*')
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
+
+# Get the resource-id of the public ip
+PUBLICIPID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '$IP')].[id]" --output tsv)
+# Update public ip address with DNS name
+az network public-ip update --ids $PUBLICIPID --dns-name $PUBLIC_DNS_NAME
+
 
 export SP_CLIENT_ID=$(az aks show -g kaldi-test -n $KUBE_NAME --query servicePrincipalProfile.clientId --output tsv)
 export SUBSCRIPTION_ID=$(az account show --query id --output tsv)

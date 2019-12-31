@@ -1,31 +1,31 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ include "speechlab.master.name" . }}
+  name: {{ include "kalditest.master.name" . }}
   labels:
-    app.kubernetes.io/name: {{ include "speechlab.master.name" . }}
-    helm.sh/chart: {{ include "speechlab.chart" . }}
+    app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+    helm.sh/chart: {{ include "kalditest.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "speechlab.master.name" . }}
+      app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "speechlab.master.name" . }}
+        app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       imagePullSecrets:
         - name: {{ .Values.image.pullSecrets }}
       containers:
-        - name: {{ include "speechlab.master.name" . }}
+        - name: {{ include "kalditest.master.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [{{ include "speechlab.master.command" . }}]
+          command: [{{ include "kalditest.master.command" . }}]
           envFrom:
           - secretRef:
               name: environment-variables-master-secret
@@ -69,31 +69,31 @@ spec:
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ include "speechlab.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-"  }}
+  name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-"  }}
   labels:
-    app.kubernetes.io/name: {{ include "speechlab.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
-    helm.sh/chart: {{ include "speechlab.chart" $ }}
+    app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
+    helm.sh/chart: {{ include "kalditest.chart" $ }}
     app.kubernetes.io/instance: {{ $.Release.Name }}
     app.kubernetes.io/managed-by: {{ $.Release.Service }}
 spec:
   replicas: {{ $replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "speechlab.worker.name" $ }}{{ printf "-%s" $model_name  | lower | replace "_" "-"}}
+      app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name  | lower | replace "_" "-"}}
       app.kubernetes.io/instance: {{ $.Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "speechlab.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
+        app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
         app.kubernetes.io/instance: {{ $.Release.Name }}
     spec:
       imagePullSecrets:
         - name: {{ $.Values.image.pullSecrets }}
       containers:
-        - name: {{ include "speechlab.worker.name" $ }}{{ printf "-%s" $model_name | lower  | replace "_" "-"}}
+        - name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower  | replace "_" "-"}}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
-          command: [{{ include "speechlab.worker.command" $ }}]
+          command: [{{ include "kalditest.worker.command" $ }}]
 
           envFrom:
           - secretRef:
