@@ -141,7 +141,7 @@ PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $AKS_NODE_RESOURC
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
 
 # Get the resource-id of the public ip
-PUBLICIPID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '$IP')].[id]" --output tsv)
+PUBLICIPID=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query id -o tsv)
 # Update public ip address with DNS name
 az network public-ip update --ids $PUBLICIPID --dns-name $PUBLIC_DNS_NAME
 
