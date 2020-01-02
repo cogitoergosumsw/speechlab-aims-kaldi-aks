@@ -117,6 +117,13 @@ spec:
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
+      volumeMounts:
+        - name: models-azurefiles
+          mountPath: /home/appuser/opt/models
+      volumes:
+        - name: models-azurefiles
+          azureFile:
+            secretName: {{ $.Values.fileshare.secretName }}
+            shareName: {{ $.Values.fileshare.shareName }}
+            readOnly: true
 {{- end }}
-
-

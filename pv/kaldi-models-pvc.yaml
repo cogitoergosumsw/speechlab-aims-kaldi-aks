@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: models-azurefiles-claim
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      usage: models-azurefiles

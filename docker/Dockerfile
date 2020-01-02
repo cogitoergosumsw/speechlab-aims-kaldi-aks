@@ -1,4 +1,4 @@
-FROM debian:9
+FROM debian:10.1
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y  \
@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y  \
     subversion \
     wget \
     vim \
+    cifs-utils \
     unzip \
     apt-utils \
     python-dateutil \

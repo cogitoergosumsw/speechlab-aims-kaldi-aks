@@ -63,5 +63,13 @@ commands:
     # post:
     #   - '"-y"'
     #   - '"/home/appuser/opt/models/engine.yaml"'
-    
+
+fileshare:
+  secretName: models-files-secret
+  shareName: online-models
+
+# nfs:
+#  name: nfs-server
+#  ipAddress: NFS_INTERNAL_IP
+#  path: '"/export/data"'    
 

@@ -21,7 +21,7 @@ service:
 
   #loadBalancerIP: 137.116.136.155 # onlinespeechlabtest.southeastasia.cloudapp.azure.com
   #loadBalancerIP: 13.76.89.12 # speechlab-online.southeastasia.cloudapp.azure.com
-  loadBalancerIP: 20.43.176.53
+  loadBalancerIP: 20.43.176.100
   enablehttps: false
 
 # resources:
@@ -63,5 +63,13 @@ commands:
     # post:
     #   - '"-y"'
     #   - '"/home/appuser/opt/models/engine.yaml"'
-    
+
+fileshare:
+  secretName: models-files-secret
+  shareName: online-models
+
+# nfs:
+#  name: nfs-server
+#  ipAddress: NFS_INTERNAL_IP
+#  path: '"/export/data"'    
 
