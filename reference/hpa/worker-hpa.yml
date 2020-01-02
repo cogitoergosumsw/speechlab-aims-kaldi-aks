@@ -18,8 +18,8 @@ items:
     selfLink: /apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/worker
     uid: 9040762f-30c5-11e9-9126-56c1cade6907
   spec:
-    maxReplicas: 14
-    minReplicas: 1
+    maxReplicas: 10
+    minReplicas: 2
     scaleTargetRef:
       apiVersion: extensions/v1beta1
       kind: Deployment
@@ -27,8 +27,8 @@ items:
     targetCPUUtilizationPercentage: 50
   status:
     currentCPUUtilizationPercentage: 5
-    currentReplicas: 14
-    desiredReplicas: 14
+    currentReplicas: 10
+    desiredReplicas: 10
     lastScaleTime: 2019-02-20T02:45:21Z
 kind: List
 metadata:

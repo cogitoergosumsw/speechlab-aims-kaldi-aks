@@ -154,7 +154,7 @@ def main():
         ws.connect()
         result = ws.get_full_hyp()
         
-        print result.encode('utf-8')
+        print (result.encode('utf-8'))
 
     else:
         print('\nTranscribe mode must be file or stream!\n')
