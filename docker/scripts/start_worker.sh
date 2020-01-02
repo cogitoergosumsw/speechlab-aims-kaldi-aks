@@ -24,4 +24,8 @@ fi
 
 echo "decided to use engine file: $USE_WHICH_ENGINE_FILE"
 
-python /home/appuser/opt/kaldi-gstreamer-server/kaldigstserver/worker.py -c $USE_WHICH_ENGINE_FILE -u ws://$MASTER/worker/ws/speech 2>&1 | tee /home/appuser/opt/worker.log 
+if [ "$ENABLE_HTTPS" == "true" ] ; then
+    python /home/appuser/opt/kaldi-gstreamer-server/kaldigstserver/worker.py -c $USE_WHICH_ENGINE_FILE -u wss://$MASTER/worker/ws/speech 2>&1 | tee /home/appuser/opt/worker.log 
+else 
+    python /home/appuser/opt/kaldi-gstreamer-server/kaldigstserver/worker.py -c $USE_WHICH_ENGINE_FILE -u ws://$MASTER/worker/ws/speech 2>&1 | tee /home/appuser/opt/worker.log 
+fi

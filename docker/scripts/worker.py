@@ -375,8 +375,7 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
         raise tornado.gen.Return(full_result)        
 
 def main_loop(uri, decoder_pipeline, post_processor, full_post_processor=None):
-
-
+    logger.info('starting worker | uri: {}'.format(uri))
     while True:
         ws = ServerWebsocket(uri, decoder_pipeline, post_processor, full_post_processor=full_post_processor)
         try:
@@ -385,6 +384,7 @@ def main_loop(uri, decoder_pipeline, post_processor, full_post_processor=None):
             ws.run_forever()
         except Exception:
             logger.error("Couldn't connect to server, waiting for %d seconds", CONNECT_TIMEOUT)
+            logging.exception("WS Connection error message")
             time.sleep(CONNECT_TIMEOUT)
         # fixes a race condition
         #time.sleep(1)

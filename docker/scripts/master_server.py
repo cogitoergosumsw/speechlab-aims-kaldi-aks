@@ -199,6 +199,7 @@ class HttpChunkedRecognizeHandler(tornado.web.RequestHandler):
         except KeyError:
             logging.warn(
                 "%s: No worker available for client request" % self.id)
+            logging.exception("no available worker error message")
             self.set_status(503)
             self.finish("No workers available, please re-try 60 seconds later")
 

@@ -3,3 +3,5 @@
 docker/ssl/
 models/*
 !models/README.md
+docker/audio/long/*
+!docker/audio/long/README.md

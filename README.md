@@ -25,15 +25,38 @@ The deploy.sh script will set up the Kuberbetes cluster, static public IP addres
 
 This project is supposed to use Kubernetes and Docker to create a container orchestration system that can handle incoming requests for the speech-to-text speech recognition system jointly developed by NTU and AISG. This system should be able to load balance the requests from the users and distribute the load evenly to all workers. With the aim of making the system scalable in the future, the Kubernetes setup should be able to scale according to the usage of the system. The system should be able to optimise the resources and best serve the needs of the users.
 
+## Architecture Design 
+
+![Archtecture Diagram](./architecture_diagram.png)
+
 **Test with HTTP client**
 
 - cd into the project directory
 
 ```bash
-curl  -X PUT -T docker/audio/test.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://[STATIC_PUBLIC_IP]/client/dynamic/recognize"
+curl  -X PUT -T docker/audio/test.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/dynamic/recognize"
 
 ```
 
-## Architecture Design 
+# Client scripts
 
-![Archtecture Diagram](./architecture_diagram.png)
+The `client_[2 or 3]_ssl.py` file allows one to connect to the server that can transcribe audio files or audio from live microphone input.
+
+## Sample commands to run
+
+### Live Microphone Input
+
+- `python client_2_ssl.py  -o stream  -u ws://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech  -r 32000 -t abc --model="SingaporeCS_0519NNET3"`
+- `python3 client_3_ssl.py  -o stream  -u ws://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech  -r 32000 -t abc --model="SingaporeCS_0519NNET3"`
+
+### Audio File
+
+- `python client_2_ssl.py -u ws://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav`
+- `python3 client_3_ssl.py -u ws://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav`
+
+### Available models
+
+1. SgEnglish_AISG_2019
+2. SingaporeCS_0519NNET3
+3. SingaporeEnglish_0519NNET3
+4. SingaporeMandarin_0519NNET3

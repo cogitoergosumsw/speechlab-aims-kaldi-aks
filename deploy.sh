@@ -97,15 +97,8 @@ sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/docker
 sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-compose-local.env
 
 # get docker registry password
-export CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
+CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
-
-docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
-sleep 3
-docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
-sleep 5
-docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 az aks create \
 -g $RESOURCE_GROUP \
@@ -119,6 +112,19 @@ az aks create \
 --load-balancer-sku standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
+
+CURRENT_DIRECTORY=$(pwd)
+
+sudo cp ~/.kube/config $CURRENT_DIRECTORY/docker/secret/
+
+docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
+sleep 1
+# there might be an issue with Docker login to Azure private container registry
+# in that case try out this StackOverflow link to see if solves the issue - https://stackoverflow.com/questions/50151833/cannot-login-to-docker-account
+docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+sleep 1
+docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 kubectl create namespace $NAMESPACE
 
@@ -137,21 +143,12 @@ export PUBLIC_DNS_NAME="kaldi-feature-test"
 az network public-ip create --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method static
 sleep 3
 PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query ipAddress --output tsv)
-# PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group kaldi-test --name $STATIC_PUBLIC_IP_NAME | grep -oP '(?<="ipAddress": ")[^"]*')
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template > docker/helm/kaldi-feature-test/values.yaml
 
 # Get the resource-id of the public ip
 PUBLICIPID=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query id -o tsv)
 # Update public ip address with DNS name
 az network public-ip update --ids $PUBLICIPID --dns-name $PUBLIC_DNS_NAME
-
-
-export SP_CLIENT_ID=$(az aks show -g kaldi-test -n $KUBE_NAME --query servicePrincipalProfile.clientId --output tsv)
-export SUBSCRIPTION_ID=$(az account show --query id --output tsv)
-# az role assignment create \
-# --assignee $SP_CLIENT_ID \
-# --role "Contributor" \
-# --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
