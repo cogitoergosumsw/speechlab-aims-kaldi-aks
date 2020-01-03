@@ -1,7 +1,7 @@
 models:
-  SingaporeEnglish_0519NNET3: 3  
-  SingaporeCS_0519NNET3: 3
-  SingaporeMandarin_0519NNET3: 3
+  SingaporeEnglish_0519NNET3: 1  
+  SingaporeCS_0519NNET3: 1
+  SingaporeMandarin_0519NNET3: 1
   
 image:
   repository: kalditest.azurecr.io/kalditestscaled
@@ -21,7 +21,7 @@ service:
 
   #loadBalancerIP: 137.116.136.155 # onlinespeechlabtest.southeastasia.cloudapp.azure.com
   #loadBalancerIP: 13.76.89.12 # speechlab-online.southeastasia.cloudapp.azure.com
-  loadBalancerIP: 20.43.176.28
+  loadBalancerIP: 20.43.170.21
   enablehttps: false
 
 # resources:

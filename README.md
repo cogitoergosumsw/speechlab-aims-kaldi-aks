@@ -18,6 +18,9 @@ It is assumed that you have a valid Azure account with the permissions to create
 4. Run the deploy script in your terminal (for Unix/Linux machines)
 `./deploy.sh`
 
+5. Place the models folders e.g SingaporeCS_0519NNET3, SingaporeMandarin_0519NNET3 in the `models/` directory of this project.
+The `deploy.sh` script will upload these models to the Azure Files 
+
 The deploy.sh script will set up the Kuberbetes cluster, static public IP address, private docker registry, and the storage account all at once. It will also create the docker image of the kaldi image to be deployed on Helm. 
 
 
@@ -29,20 +32,20 @@ This project is supposed to use Kubernetes and Docker to create a container orch
 
 ![Archtecture Diagram](./architecture_diagram.png)
 
-**Test with HTTP client**
-
-- cd into the project directory
-
-```bash
-curl  -X PUT -T docker/audio/test.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/dynamic/recognize"
-
-```
-
 # Client scripts
 
 The `client_[2 or 3]_ssl.py` file allows one to connect to the server that can transcribe audio files or audio from live microphone input.
 
 ## Sample commands to run
+
+### Test with HTTP client
+
+- cd into the project directory
+
+```bash
+curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/dynamic/recognize"
+
+```
 
 ### Live Microphone Input
 

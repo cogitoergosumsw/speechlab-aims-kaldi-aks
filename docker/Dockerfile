@@ -60,11 +60,11 @@ RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
 
 # install fuse to mount azure files
 # TODO: review the need for blobfuse
-RUN wget https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
-RUN dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
-RUN apt-get install -y apt-transport-https
-RUN apt-get update
-RUN apt-get install -y blobfuse fuse 
+# RUN wget https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
+# RUN dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
+# RUN apt-get install -y apt-transport-https
+# RUN apt-get update
+# RUN apt-get install -y blobfuse fuse 
 
 RUN apt-get install sudo
 RUN echo 'appuser ALL=(root) NOPASSWD:SETENV:/usr/bin/blobfuse' >> /etc/sudoers

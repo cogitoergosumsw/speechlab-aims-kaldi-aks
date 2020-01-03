@@ -103,7 +103,7 @@ def create_job(MODEL):
 
     container = client.V1Container(name='{}-c'.format(name),
                                    image=IMAGE,
-                                   image_pull_policy="Always",
+                                   image_pull_policy="IfNotPresent",
                                    command=["/home/appuser/opt/tini", "--",
                                             "/home/appuser/opt/start_worker.sh"],
                                    env=env_list,

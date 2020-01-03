@@ -1,6 +1,12 @@
 #!/bin/bash
 set -u
 
+# installing helm
+# (preferably run on own local machine first)
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
+
 # Install CLI to use kubectl on az
 az aks install-cli
 
@@ -77,6 +83,7 @@ az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY 
 # prompt to put the models in the models directory
 NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
 if [ $NUM_MODELS -gt 1 ]; then
+    echo "Uploading models to storage..."
     # az storage blob upload-batch -d $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME -s models/
     az storage file upload-batch -d $MODEL_SHARE --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME -s models/
 else
@@ -99,6 +106,8 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-co
 CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
+ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
+
 az aks create \
     -g $RESOURCE_GROUP \
     -n $KUBE_NAME \
@@ -106,8 +115,10 @@ az aks create \
     --enable-vmss \
     --enable-cluster-autoscaler \
     --min-count 3 \
-    --max-count 8 \
+    --max-count 10 \
     --node-vm-size Standard_D4_v3 \
+    --kubernetes-version 1.15.5 \
+    # --attach-acr $ACR_ID \
     --load-balancer-sku standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
@@ -115,6 +126,7 @@ az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-exis
 CURRENT_DIRECTORY=$(pwd)
 
 sudo cp ~/.kube/config $CURRENT_DIRECTORY/docker/secret/
+sleep 1
 
 docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
 sleep 1
@@ -128,11 +140,6 @@ docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 # create 'kaldi-test' namespace within cluster
 kubectl create namespace $NAMESPACE
 
-# installing helm
-# (preferably run on own local machine first)
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
 
 export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
 export AKS_NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $KUBE_NAME --query nodeResourceGroup -o tsv)
