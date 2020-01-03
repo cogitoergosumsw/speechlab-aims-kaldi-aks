@@ -181,6 +181,7 @@ class HttpChunkedRecognizeHandler(tornado.web.RequestHandler):
             spawn_worker = (model not in self.application.available_workers) or len(
                 self.application.available_workers[model]) <= 0
             if spawn_worker:
+                logging.info('no available workers for model: {}, spawning new worker'.format(model))
                 SpawnWorker(model=model).start()
 
             self.worker = self.application.available_workers[model].pop()

@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
@@ -117,9 +117,9 @@ spec:
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
-      volumeMounts:
-        - name: models-azurefiles
-          mountPath: /home/appuser/opt/models
+          volumeMounts:
+          - name: models-azurefiles
+            mountPath: /home/appuser/opt/models
       volumes:
         - name: models-azurefiles
           azureFile:

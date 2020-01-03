@@ -11,8 +11,6 @@ export PYTHONIOENCODING=utf8
 # mkdir -p /home/appuser/opt/models & \
 #  sudo -E blobfuse /home/appuser/opt/models --container-name=$AZURE_CONTAINER --tmp-path=/mnt/blobfusetmp --file-cache-timeout-in-seconds=315360000 -o ro -o allow_other
 
-mkdir -p /home/appuser/opt/models &
-
 # automatically use engine template file if the model does not have engine.yaml file
 FILE=/home/appuser/opt/models/$MODEL_DIR/engine.yaml
 if test -f "$FILE"; then
