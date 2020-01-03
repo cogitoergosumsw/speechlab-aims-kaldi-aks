@@ -170,43 +170,8 @@ kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 
 # kubectl create secret generic volume-azurefile-storage-secret --from-literal=azurestorageaccountname=$STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY
 
-# helm package docker/helm/speechlab/
-
-# az acr helm push --name kalditest --password kalditestpassword docker/helm/speechlab/
-
 # Deploy to Kubernetes cluster
 sleep 30
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
-
-# kubectl create -f secret/secret.yml
-
-# kubectl create -f pvc/nfs-server-azure-pvc.yml
-# kubectl create -f pvc/nfs-pvc.yml
-
-# kubectl create -f rc/nfs-server-rc.yml
-
-# kubectl create -f services/nfs-server-service.yml
-
-# NFS_IP=$(kubectl get service nfs-server | awk '{print $3}' | sed -n 2p)
-
-# sed "s/NFS_CLUSTER_IP/$NFS_IP/g" pv/nfs-pv-template.yml > pv/nfs-pv.yml
-
-# kubectl create -f pv/nfs-pv.yml
-
-# rm pv/nfs-pv.yml
-
-# kubectl create -f deployment/master-rc.yml
-
-# kubectl create -f services/master-svc.yml
-
-# MASTER_STATE=$(kubectl get service master-service | grep -i pending)
-# while [[ ! -z $MASTER_STATE ]]
-# do
-#     sleep 10
-#     echo 'waiting for master to init'
-#     MASTER_STATE=$(kubectl get service master-service | grep -i pending)
-# done
-
-# kubectl create -f deployment/worker-rc.yml
 
 exit 0
