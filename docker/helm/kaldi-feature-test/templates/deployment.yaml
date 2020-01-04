@@ -29,8 +29,6 @@ spec:
           envFrom:
           - secretRef:
               name: environment-variables-master-secret
-#          command: ["/bin/sh"]
-#          args: ["-c", "while true; do echo hello; sleep 10;done"]
           ports:
             - name: http
               containerPort: 8080
@@ -40,8 +38,8 @@ spec:
               cpu: 2
               memory: "2Gi"
             requests:
-              cpu: 2
-              memory: "2Gi"
+              cpu: 1
+              memory: "1Gi"
           livenessProbe:
             httpGet:
               path: /
@@ -94,15 +92,9 @@ spec:
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           command: [{{ include "kalditest.worker.command" $ }}]
-
           envFrom:
           - secretRef:
               name: environment-variables-workers-secret
-        
-          # ports:
-          #   - name: http
-          #     containerPort: 80
-          #     protocol: TCP
           resources:
             limits:
               cpu: 1

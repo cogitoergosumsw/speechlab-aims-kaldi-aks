@@ -94,7 +94,7 @@ else
 
     exit 1
 fi
-echo "$NUM_MODELS models uploaded to Azure File Share storage | Azure Files: $MODEL_SHARE"
+echo "$((NUM_MODELS - 1)) models uploaded to Azure File Share storage | Azure Files: $MODEL_SHARE"
 
 sed "s/AZURE_STORAGE_ACCOUNT_DATUM/$STORAGE_ACCOUNT_NAME/g" docker/secret/run_kubernetes_secret_template.yaml >docker/secret/run_kubernetes_secret.yaml
 sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/run_kubernetes_secret.yaml
@@ -106,23 +106,25 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-co
 CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
-ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
+# ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
 
 az aks create \
     -g $RESOURCE_GROUP \
     -n $KUBE_NAME \
-    --node-count 3 \
+    --node-count 5 \
     --enable-vmss \
     --enable-cluster-autoscaler \
     --min-count 3 \
-    --max-count 10 \
-    --node-vm-size Standard_D4_v3 \
+    --max-count 15 \
+    --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.5 \
+    --zones 1 2 3 \
+    --vm-set-type VirtualMachineScaleSets \
     # --attach-acr $ACR_ID \
     --load-balancer-sku standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
-
+sleep 1
 CURRENT_DIRECTORY=$(pwd)
 
 sudo cp ~/.kube/config $CURRENT_DIRECTORY/docker/secret/
@@ -132,7 +134,7 @@ docker build -t $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME docker/
 sleep 1
 # there might be an issue with Docker login to Azure private container registry
 # in that case try out this StackOverflow link to see if solves the issue - https://stackoverflow.com/questions/50151833/cannot-login-to-docker-account
-docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
+# docker login $CONTAINER_REGISTRY.azurecr.io --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 az acr login --name $CONTAINER_REGISTRY --username $CONTAINER_REGISTRY --password $CONTAINER_REGISTRY_PASSWORD
 sleep 1
 docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
