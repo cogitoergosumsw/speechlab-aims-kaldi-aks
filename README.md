@@ -28,15 +28,13 @@ It is assumed that you have a valid Azure account with the permissions to create
 ## Usage
 
 1. Give execute permission to deploy.sh
-
 `chmod +x ./deploy.sh`
 
 2. Place the models folders e.g *SingaporeCS_0519NNET3*, *SingaporeMandarin_0519NNET3* in the `models/` directory of this project.
 The `deploy.sh` script will upload these models to the Azure Files. 
 
-3. Run the deploy script in your terminal (for Unix/Linux machines)
-
-`./deploy.sh`
+3. Run the deploy script in your terminal (for Unix/Linux machines) (You need root permissions to copy the K8s config file into the Docker image)
+`sudo ./deploy.sh`
 
 The `deploy.sh` script will set up the Kuberbetes cluster, static public IP address, private docker registry, and the storage account all at once. It will also create the docker image of the kaldi image to be deployed on Helm. 
 
