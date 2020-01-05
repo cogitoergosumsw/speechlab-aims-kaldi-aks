@@ -1,4 +1,5 @@
 .idea
+_DS_Store
 .vscode
 docker/ssl/
 models/*
