@@ -3,7 +3,7 @@ set -u
 
 # installing helm
 # (preferably run on own local machine first)
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/install-helm.sh
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
 chmod u+x /tmp/install-helm.sh
 /tmp/install-helm.sh
 
@@ -119,8 +119,8 @@ az aks create \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.5 \
     --zones 1 2 3 \
-    --vm-set-type VirtualMachineScaleSets \
-    # --attach-acr $ACR_ID \
+    --vm-set-type VirtualMachineScaleSets
+# --attach-acr $ACR_ID \
     --load-balancer-sku standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
@@ -141,7 +141,6 @@ docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 
 # create 'kaldi-test' namespace within cluster
 kubectl create namespace $NAMESPACE
-
 
 export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
 export AKS_NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $KUBE_NAME --query nodeResourceGroup -o tsv)
@@ -189,5 +188,52 @@ kubectl apply -f pv/kaldi-models-pvc.yaml
 # Deploy to Kubernetes cluster
 sleep 30
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
+
+# Setup Prometheus and Grafana
+git clone https://github.com/helm/charts.git /tmp/pro-fana
+cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
+cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
+rm -rf /tmp/pro-fana
+helm install --name prometheus --namespace $NAMESPACE --set rbac.create=true docker/helm/prometheus
+echo "Waiting for Prometheus to be deployed within the cluster..."
+sleep 3
+export PROMETHEUS_POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")
+echo "Prometheus is deployed on K8s!"
+
+kubectl apply -f monitoring/grafana-config.yaml
+helm install -f monitoring/grafana-values.yaml \
+    --name grafana \
+    --namespace $NAMESPACE \
+    --set persistence.enabled=true \
+    --set persistence.accessModes={ReadWriteOnce} \
+    --set persistence.size=5Gi \
+    docker/helm/grafana/
+echo "Waiting for Grafana to be deployed within the cluster..."
+sleep 10
+export GRAFANA_ADMIN_PW=$(
+    kubectl get secret --namespace $NAMESPACE grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+    echo
+)
+kubectl patch svc grafana \
+    --namespace "$NAMESPACE" \
+    -p '{"spec": {"type": "LoadBalancer"}}'
+sleep 30
+export GRAFANA_SERVICE_IP=$(kubectl get svc grafana \
+    --namespace $NAMESPACE \
+    --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+cat <<EOF
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Grafana is deployed on K8s at http://$GRAFANA_SERVICE_IP!
+
+Login to Grafana dashboard with the following credentials,
+
+User: admin
+Password: $GRAFANA_ADMIN_PW
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+EOF
 
 exit 0

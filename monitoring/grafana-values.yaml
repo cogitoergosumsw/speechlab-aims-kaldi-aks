@@ -1,0 +1,26 @@
+# you will use this password to log in to Grafana
+# change the adminPassword value to your desired password
+adminPassword: kaldi-test-password
+# override the datasource search value and use our own datasource
+sidecar:
+  datasources:
+    enabled: true
+    label: grafana_datasource
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+dashboards:
+  default:
+    kubernetes-cluster:
+      gnetId: 6417
+      revision: 1
+      datasource: Prometheus
