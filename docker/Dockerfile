@@ -1,4 +1,4 @@
-FROM debian:9
+FROM debian:10.1
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y  \
@@ -48,8 +48,8 @@ RUN apt-get update && apt-get install -y  \
 RUN python -m pip install --upgrade pip setuptools wheel pyasn1
 RUN python3 -m pip install --upgrade pip setuptools wheel pyasn1
 
-RUN pip install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1 schedule==0.6.0 prometheus_client setuptools
-RUN pip3 install ws4py==0.5.1 tornado==5.1.1 futures requests pyasn1 schedule==0.6.0 prometheus_client setuptools
+RUN pip install futures requests pyasn1 schedule==0.6.0 setuptools
+RUN pip3 install futures requests pyasn1 schedule==0.6.0 setuptools python-dateutil
 
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
@@ -58,18 +58,6 @@ RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     echo "/usr/local/lib" >> /etc/ld.so.conf.d/jansson.conf && ldconfig && \
     rm /jansson-2.7.tar.bz2 && rm -rf /jansson-2.7
 
-# install fuse to mount azure files
-# TODO: review the need for blobfuse
-# RUN wget https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
-# RUN dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
-# RUN apt-get install -y apt-transport-https
-# RUN apt-get update
-# RUN apt-get install -y blobfuse fuse 
-
-RUN apt-get install sudo
-RUN echo 'appuser ALL=(root) NOPASSWD:SETENV:/usr/bin/blobfuse' >> /etc/sudoers
-
-RUN pip3 install python-dateutil
 RUN git clone --recursive https://github.com/kubernetes-client/python.git && \
     cd /python && \
     python3 setup.py install && \

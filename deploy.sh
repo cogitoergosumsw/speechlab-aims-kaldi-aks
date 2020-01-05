@@ -111,7 +111,7 @@ echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_
 az aks create \
     -g $RESOURCE_GROUP \
     -n $KUBE_NAME \
-    --node-count 5 \
+    --node-count 3 \
     --enable-vmss \
     --enable-cluster-autoscaler \
     --min-count 3 \

@@ -16,7 +16,7 @@ service:
   type: LoadBalancer
   port: 8080
   resourceGroup: kaldi-test
-  loadBalancerIP: 20.43.154.209
+  loadBalancerIP: 20.43.145.212
   enablehttps: false
 
 commands:
