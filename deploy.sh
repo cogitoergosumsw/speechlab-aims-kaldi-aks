@@ -236,4 +236,6 @@ Password: $GRAFANA_ADMIN_PW
 
 EOF
 
+kubectl config set-context --current --namespace $NAMESPACE
+
 exit 0
