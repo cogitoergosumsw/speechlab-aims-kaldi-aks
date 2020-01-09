@@ -117,11 +117,11 @@ az aks create \
     --min-count 3 \
     --max-count 15 \
     --node-vm-size Standard_B4ms \
-    --kubernetes-version 1.15.5 \
+    --kubernetes-version 1.17.0 \
     --zones 1 2 3 \
-    --vm-set-type VirtualMachineScaleSets
+    --vm-set-type VirtualMachineScaleSets \
 # --attach-acr $ACR_ID \
-    --load-balancer-sku standard
+    --load-balancer-sku=standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
 sleep 1
@@ -188,13 +188,23 @@ kubectl apply -f pv/kaldi-models-pvc.yaml
 # Deploy to Kubernetes cluster
 sleep 30
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
-
+sleep 240
 # Setup Prometheus and Grafana
 git clone https://github.com/helm/charts.git /tmp/pro-fana
 cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
 cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
 rm -rf /tmp/pro-fana
-helm install --name prometheus --namespace $NAMESPACE --set rbac.create=true docker/helm/prometheus
+
+for i in {0..1}; do
+    MASTER_IP=$(kubectl get pods --selector=app.kubernetes.io/name=kaldi-feature-test-master -o jsonpath="{.items[$i].status.podIP}")
+    sed -i "s/MASTER_CLUSTER_IP_$i/$MASTER_IP/g" monitoring/values.yaml
+done
+
+helm install --name prometheus \
+    --namespace $NAMESPACE \
+    docker/helm/prometheus
+    # -f monitoring/values.yaml 
+
 echo "Waiting for Prometheus to be deployed within the cluster..."
 sleep 3
 export PROMETHEUS_POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")

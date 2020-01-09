@@ -10,6 +10,11 @@ metadata:
 spec:
   loadBalancerIP: {{ .Values.service.loadBalancerIP }} 
   type: {{ .Values.service.type }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: '8081'
   ports:
     - protocol: TCP
       {{- if eq .Values.service.enablehttps true}}

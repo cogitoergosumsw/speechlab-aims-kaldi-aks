@@ -1184,8 +1184,12 @@ serverFiles:
     scrape_configs:
       - job_name: prometheus
         static_configs:
-          - targets:
+          - targets: 
             - localhost:9090
+      - job_name: app.kubernetes.io/name=kaldi-feature-test-master
+        static_configs:
+        - targets:
+          - [ 'MASTER_CLUSTER_IP_0:8081', 'MASTER_CLUSTER_IP_1:8081']
 
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
