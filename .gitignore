@@ -1,6 +1,7 @@
 .idea
 _DS_Store
 .vscode
+.azure
 docker/ssl/
 models/*
 !models/README.md

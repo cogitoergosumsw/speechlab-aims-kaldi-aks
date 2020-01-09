@@ -108,20 +108,28 @@ echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_
 
 # ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
 
+# a bug with Azure CLI getting the correct Service Principal to create the cluster
+# export AKS_SP_ID=$(az ad sp create-for-rbac --skip-assignment --query appId -o tsv)
+# sleep 10
+# export AKS_SP_PW=$(az ad sp credential reset --name $AKS_SP_ID --query password -o tsv)
+# sleep 10
+# echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
+# sleep 10
+# sudo cp -r .azure $HOME/.azure
+
 az aks create \
-    -g $RESOURCE_GROUP \
-    -n $KUBE_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --name $KUBE_NAME \
+    --service-principal $AKS_SP_ID \
+    --client-secret $AKS_SP_PW \
     --node-count 3 \
-    --enable-vmss \
     --enable-cluster-autoscaler \
     --min-count 3 \
     --max-count 15 \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.17.0 \
-    --zones 1 2 3 \
-    --vm-set-type VirtualMachineScaleSets \
+    --zones 1 2 3 --load-balancer-sku standard
 # --attach-acr $ACR_ID \
-    --load-balancer-sku=standard
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
 sleep 1
