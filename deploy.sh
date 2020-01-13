@@ -64,7 +64,7 @@ az provider register --namespace Microsoft.ContainerService
 
 az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard --admin-enabled true
 
-az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Standard_LRS --kind StorageV2
+az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Premium_LRS --kind StorageV2
 
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -o tsv)
 
@@ -115,7 +115,7 @@ export AKS_SP_PW=$(az ad sp credential reset --name $AKS_SP_ID --query password 
 sleep 10
 echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
 sleep 10
-sudo cp -r .azure $HOME/.azure
+# sudo cp -r .azure $HOME/.azure
 
 az aks create \
     --resource-group $RESOURCE_GROUP \
