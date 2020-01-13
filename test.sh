@@ -8,11 +8,6 @@ sudo cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
 sudo cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
 rm -rf /tmp/pro-fana
 
-# for i in {0..1}; do
-#     MASTER_IP=$(kubectl get pods --selector=app.kubernetes.io/name=kaldi-feature-test-master -o jsonpath="{.items[$i].status.podIP}")
-#     sed -i "s/MASTER_CLUSTER_IP_$i/$MASTER_IP/g" monitoring/values.yaml 
-# done
-
 helm install --name prometheus \
     --namespace $NAMESPACE docker/helm/prometheus
     # -f monitoring/values.yaml 

@@ -64,7 +64,7 @@ az provider register --namespace Microsoft.ContainerService
 
 az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku Standard --admin-enabled true
 
-az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Premium_LRS --kind StorageV2
+az storage account create -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -l $LOCATION --sku Premium_LRS --kind FileStorage
 
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string -n $STORAGE_ACCOUNT_NAME -g $RESOURCE_GROUP -o tsv)
 
@@ -78,7 +78,7 @@ STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --ac
 echo Storage account name: $STORAGE_ACCOUNT_NAME
 echo Storage account key: $STORAGE_KEY
 
-az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
+# az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
 
 # prompt to put the models in the models directory
 NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
@@ -202,11 +202,6 @@ git clone https://github.com/helm/charts.git /tmp/pro-fana
 cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
 cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
 rm -rf /tmp/pro-fana
-
-# for i in {0..1}; do
-#     MASTER_IP=$(kubectl get pods --selector=app.kubernetes.io/name=kaldi-feature-test-master -o jsonpath="{.items[$i].status.podIP}")
-#     sed -i "s/MASTER_CLUSTER_IP_$i/$MASTER_IP/g" monitoring/values.yaml
-# done
 
 helm install --name prometheus \
     --namespace $NAMESPACE \
