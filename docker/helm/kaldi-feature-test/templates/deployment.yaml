@@ -15,9 +15,9 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
-      # annotations:
-      #   prometheus.io/scrape: 'true'
-      #   prometheus.io/port: '8081'
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8081'
       labels:
         app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -36,6 +36,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: prometheus
+              containerPort: 8081
           resources:
             limits:
               cpu: 2

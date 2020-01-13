@@ -109,13 +109,13 @@ echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_
 # ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
 
 # a bug with Azure CLI getting the correct Service Principal to create the cluster
-# export AKS_SP_ID=$(az ad sp create-for-rbac --skip-assignment --query appId -o tsv)
-# sleep 10
-# export AKS_SP_PW=$(az ad sp credential reset --name $AKS_SP_ID --query password -o tsv)
-# sleep 10
-# echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
-# sleep 10
-# sudo cp -r .azure $HOME/.azure
+export AKS_SP_ID=$(az ad sp create-for-rbac --skip-assignment --query appId -o tsv)
+sleep 10
+export AKS_SP_PW=$(az ad sp credential reset --name $AKS_SP_ID --query password -o tsv)
+sleep 10
+echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
+sleep 10
+sudo cp -r .azure $HOME/.azure
 
 az aks create \
     --resource-group $RESOURCE_GROUP \
@@ -127,7 +127,7 @@ az aks create \
     --min-count 3 \
     --max-count 15 \
     --node-vm-size Standard_B4ms \
-    --kubernetes-version 1.17.0 \
+    --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
 # --attach-acr $ACR_ID \
 
@@ -203,10 +203,10 @@ cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
 cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
 rm -rf /tmp/pro-fana
 
-for i in {0..1}; do
-    MASTER_IP=$(kubectl get pods --selector=app.kubernetes.io/name=kaldi-feature-test-master -o jsonpath="{.items[$i].status.podIP}")
-    sed -i "s/MASTER_CLUSTER_IP_$i/$MASTER_IP/g" monitoring/values.yaml
-done
+# for i in {0..1}; do
+#     MASTER_IP=$(kubectl get pods --selector=app.kubernetes.io/name=kaldi-feature-test-master -o jsonpath="{.items[$i].status.podIP}")
+#     sed -i "s/MASTER_CLUSTER_IP_$i/$MASTER_IP/g" monitoring/values.yaml
+# done
 
 helm install --name prometheus \
     --namespace $NAMESPACE \

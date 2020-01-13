@@ -38,7 +38,6 @@ num_worker = prom.Gauge('number_of_worker_available',
 num_req_reject = prom.Counter(
     'number_of_request_reject', 'number_of_request_reject')
 
-
 class Application(tornado.web.Application):
     def __init__(self):
         settings = dict(
@@ -490,9 +489,9 @@ def main():
         # app.listen(options.port).start()
         # non root can't run port above 1024
         app.listen(8080).start()
+    prom.start_http_server(8081)
     tornado.ioloop.IOLoop.instance().start()
 
 
 if __name__ == "__main__":
     main()
-    prom.start_http_server(8081)
