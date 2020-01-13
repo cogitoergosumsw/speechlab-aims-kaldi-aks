@@ -127,10 +127,10 @@ Parameter | Description | Default
 `alertmanager.enabled` | If true, create alertmanager | `true`
 `alertmanager.name` | alertmanager container name | `alertmanager`
 `alertmanager.image.repository` | alertmanager container image repository | `prom/alertmanager`
-`alertmanager.image.tag` | alertmanager container image tag | `v0.18.0`
+`alertmanager.image.tag` | alertmanager container image tag | `v0.20.0`
 `alertmanager.image.pullPolicy` | alertmanager container image pull policy | `IfNotPresent`
 `alertmanager.prefixURL` | The prefix slug at which the server can be accessed | ``
-`alertmanager.baseURL` | The external url at which the server can be accessed | `/`
+`alertmanager.baseURL` | The external url at which the server can be accessed | `"http://localhost:9093"`
 `alertmanager.extraArgs` | Additional alertmanager container arguments | `{}`
 `alertmanager.extraSecretMounts` | Additional alertmanager Secret mounts | `[]`
 `alertmanager.configMapOverrideName` | Prometheus alertmanager ConfigMap override where full-name is `{{.Release.Name}}-{{.Values.alertmanager.configMapOverrideName}}` and setting this value will prevent the default alertmanager ConfigMap from being generated | `""`
@@ -158,6 +158,7 @@ Parameter | Description | Default
 `alertmanager.persistentVolume.volumeBindingMode` | alertmanager data Persistent Volume Binding Mode | `unset`
 `alertmanager.persistentVolume.subPath` | Subdirectory of alertmanager data Persistent Volume to mount | `""`
 `alertmanager.podAnnotations` | annotations to be added to alertmanager pods | `{}`
+`alertmanager.podLabels` | labels to be added to Prometheus AlertManager pods | `{}`
 `alertmanager.podSecurityPolicy.annotations` | Specify pod annotations in the pod security policy | `{}` |
 `alertmanager.replicaCount` | desired number of alertmanager pods | `1`
 `alertmanager.statefulSet.enabled` | If true, use a statefulset instead of a deployment for pod management | `false`
@@ -180,7 +181,7 @@ Parameter | Description | Default
 `alertmanagerFiles.alertmanager.yml` | Prometheus alertmanager configuration | example configuration
 `configmapReload.name` | configmap-reload container name | `configmap-reload`
 `configmapReload.image.repository` | configmap-reload container image repository | `jimmidyson/configmap-reload`
-`configmapReload.image.tag` | configmap-reload container image tag | `v0.2.2`
+`configmapReload.image.tag` | configmap-reload container image tag | `v0.3.0`
 `configmapReload.image.pullPolicy` | configmap-reload container image pull policy | `IfNotPresent`
 `configmapReload.extraArgs` | Additional configmap-reload container arguments | `{}`
 `configmapReload.extraVolumeDirs` | Additional configmap-reload volume directories | `{}`
@@ -195,7 +196,7 @@ Parameter | Description | Default
 `kubeStateMetrics.enabled` | If true, create kube-state-metrics | `true`
 `kubeStateMetrics.name` | kube-state-metrics container name | `kube-state-metrics`
 `kubeStateMetrics.image.repository` | kube-state-metrics container image repository| `quay.io/coreos/kube-state-metrics`
-`kubeStateMetrics.image.tag` | kube-state-metrics container image tag | `v1.5.0`
+`kubeStateMetrics.image.tag` | kube-state-metrics container image tag | `v1.9.0`
 `kubeStateMetrics.image.pullPolicy` | kube-state-metrics container image pull policy | `IfNotPresent`
 `kubeStateMetrics.args` | kube-state-metrics container arguments | `{}`
 `kubeStateMetrics.nodeSelector` | node labels for kube-state-metrics pod assignment | `{}`
@@ -219,7 +220,7 @@ Parameter | Description | Default
 `nodeExporter.enabled` | If true, create node-exporter | `true`
 `nodeExporter.name` | node-exporter container name | `node-exporter`
 `nodeExporter.image.repository` | node-exporter container image repository| `prom/node-exporter`
-`nodeExporter.image.tag` | node-exporter container image tag | `v0.18.0`
+`nodeExporter.image.tag` | node-exporter container image tag | `v0.18.1`
 `nodeExporter.image.pullPolicy` | node-exporter container image pull policy | `IfNotPresent`
 `nodeExporter.extraArgs` | Additional node-exporter container arguments | `{}`
 `nodeExporter.extraHostPathMounts` | Additional node-exporter hostPath mounts | `[]`
@@ -249,7 +250,7 @@ Parameter | Description | Default
 `pushgateway.enabled` | If true, create pushgateway | `true`
 `pushgateway.name` | pushgateway container name | `pushgateway`
 `pushgateway.image.repository` | pushgateway container image repository | `prom/pushgateway`
-`pushgateway.image.tag` | pushgateway container image tag | `v0.8.0`
+`pushgateway.image.tag` | pushgateway container image tag | `v1.0.1`
 `pushgateway.image.pullPolicy` | pushgateway container image pull policy | `IfNotPresent`
 `pushgateway.extraArgs` | Additional pushgateway container arguments | `{}`
 `pushgateway.ingress.enabled` | If true, pushgateway Ingress will be created | `false`
@@ -288,7 +289,7 @@ Parameter | Description | Default
 `server.enabled` | If false, Prometheus server will not be created | `true`
 `server.name` | Prometheus server container name | `server`
 `server.image.repository` | Prometheus server container image repository | `prom/prometheus`
-`server.image.tag` | Prometheus server container image tag | `v2.13.1`
+`server.image.tag` | Prometheus server container image tag | `v2.15.2`
 `server.image.pullPolicy` | Prometheus server container image pull policy | `IfNotPresent`
 `server.configPath` |  Path to a prometheus server config file on the container FS  | `/etc/config/prometheus.yml`
 `server.global.scrape_interval` | How frequently to scrape targets by default | `1m`

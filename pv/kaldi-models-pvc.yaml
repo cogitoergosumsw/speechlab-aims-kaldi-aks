@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: models-azurefiles-claim
+  namespace: kaldi-test
 spec:
   accessModes:
     - ReadOnlyMany
