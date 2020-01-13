@@ -78,8 +78,6 @@ STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --ac
 echo Storage account name: $STORAGE_ACCOUNT_NAME
 echo Storage account key: $STORAGE_KEY
 
-# az storage container create -n $AZURE_CONTAINER_NAME --account-key $STORAGE_KEY --account-name $STORAGE_ACCOUNT_NAME
-
 # prompt to put the models in the models directory
 NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
 if [ $NUM_MODELS -gt 1 ]; then
@@ -152,16 +150,19 @@ kubectl create namespace $NAMESPACE
 
 export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
 export AKS_NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $KUBE_NAME --query nodeResourceGroup -o tsv)
-export PUBLIC_DNS_NAME="kaldi-feature-test"
+sleep 5
+export PUBLIC_DNS_NAME=kaldi-feature-test
 
 # create new static IP address for values.yaml
 az network public-ip create --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --sku Standard --allocation-method static
-sleep 3
+sleep 5
 PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query ipAddress --output tsv)
+sleep 5
 sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template >docker/helm/kaldi-feature-test/values.yaml
 
 # Get the resource-id of the public ip
 PUBLICIPID=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query id -o tsv)
+sleep 5
 # Update public ip address with DNS name
 az network public-ip update --ids $PUBLICIPID --dns-name $PUBLIC_DNS_NAME
 
