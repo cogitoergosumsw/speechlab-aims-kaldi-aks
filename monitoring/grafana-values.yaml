@@ -22,5 +22,6 @@ dashboards:
   default:
     kubernetes-cluster:
       gnetId: 6417
+      # gnetId: 315 # adding another good dashboard template
       revision: 1
       datasource: Prometheus

@@ -231,6 +231,9 @@ export GRAFANA_ADMIN_PW=$(
 kubectl patch svc grafana \
     --namespace "$NAMESPACE" \
     -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc prometheus-server \
+    --namespace "$NAMESPACE" \
+    -p '{"spec": {"type": "LoadBalancer"}}'
 sleep 30
 export GRAFANA_SERVICE_IP=$(kubectl get svc grafana \
     --namespace $NAMESPACE \

@@ -367,18 +367,6 @@ class DecoderSocketHandler(tornado.websocket.WebSocketHandler):
         logging.info("%s: Sending event %s to client" % (self.id, event_str))
         self.write_message(json.dumps(event))
 
-    # @tornado.web.asynchronous
-    # @tornado.gen.coroutine
-    # def get_request(self):
-    #     while len(self.application.available_workers) == 0:
-    #         logging.info("wait for 1 seconds")
-    #         # time.sleep(1)
-    #         yield tornado.gen.sleep(1)
-
-    #     self.set_status(200)
-    #     self.finish("new worker is ready")
-    #     logging.info("Everything done")
-
     def open(self):
         self.id = str(uuid.uuid4())
         logging.info("%s: OPEN" % (self.id))
@@ -394,19 +382,6 @@ class DecoderSocketHandler(tornado.websocket.WebSocketHandler):
         model = self.get_argument("model", "UNKNOWN_MODEL", True)
         logging.info("client with ws requsted model:"+str(model))
         try:
-
-            # self.get_request()
-
-            # while len(self.application.available_workers) == 0:
-            #     logging.info("wait 1 second for worker to join ")
-            #     time.sleep(1)
-            # while True:
-            #     logging.info("??? "+len(self.application.available_workers))
-            #     time.sleep(1)
-            # logging.info('start sleeping')
-            # time.sleep(10)
-            # logging.info('end sleeping')
-
             spawn_worker = (model not in self.application.available_workers) or len(
                 self.application.available_workers[model]) <= 0
             if spawn_worker:
