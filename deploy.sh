@@ -200,13 +200,10 @@ helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-
 sleep 240
 # Setup Prometheus and Grafana
 git clone https://github.com/helm/charts.git /tmp/pro-fana
-cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
-cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
-rm -rf /tmp/pro-fana
 
 helm install --name prometheus \
     --namespace $NAMESPACE \
-    docker/helm/prometheus
+    /tmp/pro-fana/prometheus
     # -f monitoring/values.yaml 
 
 echo "Waiting for Prometheus to be deployed within the cluster..."
@@ -221,7 +218,7 @@ helm install -f monitoring/grafana-values.yaml \
     --set persistence.enabled=true \
     --set persistence.accessModes={ReadWriteOnce} \
     --set persistence.size=5Gi \
-    docker/helm/grafana/
+    /tmp/pro-fana/grafana/
 echo "Waiting for Grafana to be deployed within the cluster..."
 sleep 10
 export GRAFANA_ADMIN_PW=$(
@@ -252,6 +249,9 @@ Password: $GRAFANA_ADMIN_PW
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 EOF
+
+# clean up Prometheus and Grafana helm files
+rm -rf /tmp/pro-fana
 
 kubectl config set-context --current --namespace $NAMESPACE
 
