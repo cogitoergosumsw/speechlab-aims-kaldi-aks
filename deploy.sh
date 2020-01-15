@@ -148,6 +148,8 @@ docker push $CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME
 # create 'kaldi-test' namespace within cluster
 kubectl create namespace $NAMESPACE
 
+kubectl config set-context --current --namespace $NAMESPACE
+
 export STATIC_PUBLIC_IP_NAME=kaldi-static-ip
 export AKS_NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $KUBE_NAME --query nodeResourceGroup -o tsv)
 sleep 5
@@ -252,7 +254,5 @@ EOF
 
 # clean up Prometheus and Grafana helm files
 rm -rf /tmp/pro-fana
-
-kubectl config set-context --current --namespace $NAMESPACE
 
 exit 0
