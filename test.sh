@@ -3,15 +3,14 @@ set -u
 
 NAMESPACE=kaldi-test
 
+# Setup Prometheus and Grafana
 git clone https://github.com/helm/charts.git /tmp/pro-fana
-sudo cp -r /tmp/pro-fana/stable/prometheus ./docker/helm/prometheus/
-sudo cp -r /tmp/pro-fana/stable/grafana ./docker/helm/grafana/
-rm -rf /tmp/pro-fana
 
 helm install --name prometheus \
-    --namespace $NAMESPACE docker/helm/prometheus
+    --namespace $NAMESPACE \
+    /tmp/pro-fana/stable/prometheus
     # -f monitoring/values.yaml 
-    
+
 echo "Waiting for Prometheus to be deployed within the cluster..."
 sleep 3
 export PROMETHEUS_POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")
@@ -24,7 +23,7 @@ helm install -f monitoring/grafana-values.yaml \
     --set persistence.enabled=true \
     --set persistence.accessModes={ReadWriteOnce} \
     --set persistence.size=5Gi \
-    docker/helm/grafana/
+    /tmp/pro-fana/stable/grafana
 echo "Waiting for Grafana to be deployed within the cluster..."
 sleep 10
 export GRAFANA_ADMIN_PW=$(
@@ -32,6 +31,9 @@ export GRAFANA_ADMIN_PW=$(
     echo
 )
 kubectl patch svc grafana \
+    --namespace "$NAMESPACE" \
+    -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc prometheus-server \
     --namespace "$NAMESPACE" \
     -p '{"spec": {"type": "LoadBalancer"}}'
 sleep 30
@@ -53,4 +55,7 @@ Password: $GRAFANA_ADMIN_PW
 
 EOF
 
-kubectl config set-context --current --namespace $NAMESPACE
+# clean up Prometheus and Grafana helm files
+rm -rf /tmp/pro-fana
+
+exit 0

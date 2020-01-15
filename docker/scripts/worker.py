@@ -89,7 +89,6 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
         logger.info("Opened websocket connection to server")
         self.state = self.STATE_CONNECTED
         self.last_partial_result = ""
-
         self.monitor_idle_run_once_worker()
         
     
@@ -404,6 +403,7 @@ def main_loop(uri, decoder_pipeline, post_processor, full_post_processor=None):
 def main():
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)8s %(asctime)s %(message)s ")
     logging.debug('Starting up worker')
+    prom.start_http_server(8081)
     parser = argparse.ArgumentParser(description='Worker for kaldigstserver')
     parser.add_argument('-u', '--uri', default="ws://localhost:8888/worker/ws/speech", dest="uri", help="Server<-->worker websocket URI")
     parser.add_argument('-f', '--fork', default=1, dest="fork", type=int)

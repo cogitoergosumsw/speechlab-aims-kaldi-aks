@@ -86,6 +86,9 @@ spec:
       app.kubernetes.io/instance: {{ $.Release.Name }}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8081'
       labels:
         app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
         app.kubernetes.io/instance: {{ $.Release.Name }}
@@ -100,6 +103,9 @@ spec:
           envFrom:
           - secretRef:
               name: environment-variables-workers-secret
+          ports:
+            - name: prometheus
+              containerPort: 8081
           resources:
             limits:
               cpu: 1

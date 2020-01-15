@@ -104,7 +104,7 @@ sed -i "s|AZURE_STORAGE_ACCESS_KEY_DATUM|$STORAGE_KEY|g" docker/secret/docker-co
 CONTAINER_REGISTRY_PASSWORD=$(az acr credential show -n kalditest --query passwords[0].value | grep -oP '"\K[^"]+')
 echo "Container Registry | username: $CONTAINER_REGISTRY | password: $CONTAINER_REGISTRY_PASSWORD"
 
-# ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
+# export ACR_ID=$(az acr show --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --query id --output tsv)
 
 # a bug with Azure CLI getting the correct Service Principal to create the cluster
 export AKS_SP_ID=$(az ad sp create-for-rbac --skip-assignment --query appId -o tsv)
@@ -127,7 +127,9 @@ az aks create \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
-# --attach-acr $ACR_ID \
+
+# require owner of subscription to integrate ACR into the AKS
+# az aks update -n $KUBE_NAME -g $RESOURCE_GROUP --attach-acr $ACR_ID
 
 az aks get-credentials -g $RESOURCE_GROUP -n $KUBE_NAME --admin --overwrite-existing
 sleep 1
@@ -205,7 +207,7 @@ git clone https://github.com/helm/charts.git /tmp/pro-fana
 
 helm install --name prometheus \
     --namespace $NAMESPACE \
-    /tmp/pro-fana/prometheus
+    /tmp/pro-fana/stable/prometheus
     # -f monitoring/values.yaml 
 
 echo "Waiting for Prometheus to be deployed within the cluster..."
@@ -220,7 +222,7 @@ helm install -f monitoring/grafana-values.yaml \
     --set persistence.enabled=true \
     --set persistence.accessModes={ReadWriteOnce} \
     --set persistence.size=5Gi \
-    /tmp/pro-fana/grafana/
+    /tmp/pro-fana/stable/grafana/
 echo "Waiting for Grafana to be deployed within the cluster..."
 sleep 10
 export GRAFANA_ADMIN_PW=$(
