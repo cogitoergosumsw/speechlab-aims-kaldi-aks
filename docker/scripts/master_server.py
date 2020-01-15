@@ -36,7 +36,7 @@ num_req = prom.Counter('number_of_request_receive_by_master',
 num_worker = prom.Gauge('number_of_worker_available',
                         'number of worker available')
 num_req_reject = prom.Counter(
-    'number_of_request_reject', 'number_of_request_reject')
+        'number_of_request_reject', 'number_of_request_reject')
 
 class Application(tornado.web.Application):
     def __init__(self):

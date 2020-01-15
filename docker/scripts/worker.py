@@ -33,6 +33,7 @@ from decoder2 import DecoderPipeline2
 import common
 
 import worker_addon
+import prometheus_client as prom
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,8 @@ CONNECT_TIMEOUT = 5
 SILENCE_TIMEOUT = 5
 USE_NNET2 = False
 
-
+worker_status = prom.Enum('worker_status', 'Status of worker',
+        states=['idle', 'running', 'stopped'])
         
 class ServerWebsocket(worker_addon.BaseServerWebsocket):
     STATE_CREATED = 0
@@ -122,6 +124,7 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
             self.decoder_pipeline.init_request(self.request_id, content_type)
             self.last_decoder_message = time.time()
             thread.start_new_thread(self.guard_timeout, ())
+            worker_status.state('running')
             logger.info("%s: Started timeout guard" % self.request_id)
             logger.info("%s: Initialized request" % self.request_id)
             self.state = self.STATE_INITIALIZED
@@ -152,6 +155,7 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
                 logger.info("%s: Ignoring data, worker already in state %d" % (self.request_id, self.state))
 
     def finish_request(self):
+        worker_status.state('stopped')
         if self.state == self.STATE_CONNECTED:
             # connection closed when we are not doing anything
             self.decoder_pipeline.finish_request()
