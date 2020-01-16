@@ -7,9 +7,11 @@ NAMESPACE=kaldi-test
 git clone https://github.com/helm/charts.git /tmp/pro-fana
 
 helm install --name prometheus \
+    --set server.global.scrape_interval='5s' \
+    --set server.global.scrape_timeout='5s' \
+    --set server.global.evaluation_interval='10s' \
     --namespace $NAMESPACE \
     /tmp/pro-fana/stable/prometheus
-    # -f monitoring/values.yaml 
 
 echo "Waiting for Prometheus to be deployed within the cluster..."
 sleep 3
@@ -36,7 +38,7 @@ kubectl patch svc grafana \
 kubectl patch svc prometheus-server \
     --namespace "$NAMESPACE" \
     -p '{"spec": {"type": "LoadBalancer"}}'
-sleep 30
+sleep 60
 export GRAFANA_SERVICE_IP=$(kubectl get svc grafana \
     --namespace $NAMESPACE \
     --output jsonpath='{.status.loadBalancer.ingress[0].ip}')

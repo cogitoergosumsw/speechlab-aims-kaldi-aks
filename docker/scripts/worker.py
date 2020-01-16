@@ -42,7 +42,8 @@ SILENCE_TIMEOUT = 5
 USE_NNET2 = False
 
 worker_status = prom.Enum('worker_status', 'Status of worker',
-        states=['idle', 'running', 'stopped'])
+        states=['idle', 'running'])
+worker_model = prom.Info('worker_model', 'Model which the worker is using to decode')
         
 class ServerWebsocket(worker_addon.BaseServerWebsocket):
     STATE_CREATED = 0
@@ -57,7 +58,7 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
         uri = uri + '?%s' % (urllib.urlencode([("model", os.getenv('MODEL_DIR')  )]))
         self.uri = uri
 
-        
+        worker_model.info({'model': os.getenv('MODEL_DIR')})
         self.decoder_pipeline = decoder_pipeline
         self.post_processor = post_processor
         self.full_post_processor = full_post_processor
@@ -154,7 +155,6 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
                 logger.info("%s: Ignoring data, worker already in state %d" % (self.request_id, self.state))
 
     def finish_request(self):
-        worker_status.state('stopped')
         if self.state == self.STATE_CONNECTED:
             # connection closed when we are not doing anything
             self.decoder_pipeline.finish_request()
@@ -182,6 +182,7 @@ class ServerWebsocket(worker_addon.BaseServerWebsocket):
                     time.sleep(1)
             self.decoder_pipeline.finish_request()
             logger.info("%s: Finished waiting for EOS" % self.request_id)
+        worker_status.state('idle')
 
 
     def closed(self, code, reason=None):

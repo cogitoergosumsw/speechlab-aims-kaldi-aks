@@ -75,6 +75,12 @@ def create_job(MODEL):
     body.status = client.V1JobStatus()
     template = client.V1PodTemplate()
     template.template = client.V1PodTemplateSpec()
+    template.template.metadata = client.V1ObjectMeta(
+        annotations={
+            "prometheus.io/scrape": "true",
+            "prometheus.io/port": "8081"
+        }
+    )
     azure_file_volume = client.V1AzureFileVolumeSource(
         read_only=True,
         secret_name=MODELS_FILESHARE_SECRET,
@@ -107,6 +113,10 @@ def create_job(MODEL):
                                    command=["/home/appuser/opt/tini", "--",
                                             "/home/appuser/opt/start_worker.sh"],
                                    env=env_list,
+                                   ports=[client.V1ContainerPort(
+                                       container_port=8081,
+                                       name="prometheus"
+                                   )],
                                    security_context=client.V1SecurityContext(
                                        privileged=True, capabilities=client.V1Capabilities(add=["SYS_ADMIN"])),
                                    resources=client.V1ResourceRequirements(
