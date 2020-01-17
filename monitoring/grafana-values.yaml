@@ -20,8 +20,11 @@ dashboardProviders:
         path: /var/lib/grafana/dashboards/default
 dashboards:
   default:
+    kaldi-custom-dashboard:
+      file: dashboards/kaldi-grafana-dashboard.json
     kubernetes-cluster:
-      gnetId: 6417
-      # gnetId: 315 # adding another good dashboard template
+      # adding another good dashboard template
+      # gnetId: 6417
+      gnetId: 315
       revision: 1
       datasource: Prometheus

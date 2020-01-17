@@ -17,6 +17,7 @@ echo "Waiting for Prometheus to be deployed within the cluster..."
 sleep 3
 export PROMETHEUS_POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")
 echo "Prometheus is deployed on K8s!"
+cp monitoring/kaldi-grafana-dashboard.json /tmp/pro-fana/stable/grafana/dashboards/kaldi-grafana-dashboard.json
 
 kubectl apply -f monitoring/grafana-config.yaml
 helm install -f monitoring/grafana-values.yaml \
