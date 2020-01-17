@@ -235,24 +235,47 @@ export GRAFANA_ADMIN_PW=$(
 kubectl patch svc grafana \
     --namespace "$NAMESPACE" \
     -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl patch svc prometheus-server \
-    --namespace "$NAMESPACE" \
-    -p '{"spec": {"type": "LoadBalancer"}}'
 
 sleep 60
+export MASTER_SERVICE="$KUBE_NAME-master"
 export GRAFANA_SERVICE_IP=$(kubectl get svc grafana \
     --namespace $NAMESPACE \
     --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
-cat <<EOF
+export MASTER_SERVICE_IP=$(kubectl get svc $MASTER_SERVICE \
+    --namespace $NAMESPACE \
+    --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+cat > cluster-info.txt <<EOF
+
+KALDI SPEECH RECOGNITION SYSTEM deployed on Kubernetes
+###################################################################
+
+Access the Master pod service at http://$MASTER_SERVICE_IP!
+
+You may access the speech recognition function using a live microphone or by passing in an audio file.
+
+For example,
+
+python3 client/client_3_ssl.py -u ws://$MASTER_SERVICE_IP/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav
+
+OR
+
+curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://$MASTER_SERVICE_IP/client/dynamic/recognize"
+
+###################################################################
+
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 Grafana is deployed on K8s at http://$GRAFANA_SERVICE_IP!
 
 Login to Grafana dashboard with the following credentials,
 
 User: admin
 Password: $GRAFANA_ADMIN_PW
+
+The custom Kaldi Speech Recognition Kubernetes dashboard is available in the General folder.
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
