@@ -113,17 +113,16 @@ export AKS_SP_PW=$(az ad sp credential reset --name $AKS_SP_ID --query password 
 sleep 10
 echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
 sleep 10
-# sudo cp -r .azure $HOME/.azure
 
 az aks create \
     --resource-group $RESOURCE_GROUP \
     --name $KUBE_NAME \
     --service-principal $AKS_SP_ID \
     --client-secret $AKS_SP_PW \
-    --node-count 3 \
+    --node-count 17 \
     --enable-cluster-autoscaler \
-    --min-count 3 \
-    --max-count 15 \
+    --min-count 17 \
+    --max-count 33 \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
@@ -162,7 +161,7 @@ az network public-ip create --resource-group $AKS_NODE_RESOURCE_GROUP --name $ST
 sleep 5
 PUBLIC_IP_ADDRESS=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query ipAddress --output tsv)
 sleep 5
-sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.yaml.template >docker/helm/kaldi-feature-test/values.yaml
+sed "s/STATIC_IP_ADDRESS/$PUBLIC_IP_ADDRESS/g" docker/helm/values.template.yaml >docker/helm/kaldi-feature-test/values.yaml
 
 # Get the resource-id of the public ip
 PUBLICIPID=$(az network public-ip show --resource-group $AKS_NODE_RESOURCE_GROUP --name $STATIC_PUBLIC_IP_NAME --query id -o tsv)
@@ -281,6 +280,7 @@ The custom Kaldi Speech Recognition Kubernetes dashboard is available in the Gen
 
 EOF
 
+echo "All information about the Kaldi Test Kubernetes cluster is available in cluster-info.txt in this directory!"
 # clean up Prometheus and Grafana helm files
 rm -rf /tmp/pro-fana
 
