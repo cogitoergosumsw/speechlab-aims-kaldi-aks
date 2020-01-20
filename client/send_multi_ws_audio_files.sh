@@ -20,7 +20,7 @@ fi
 
 # change the IP address of the master service accordingly
 for i in {1..100}; do
-    python3 client/client_3_ssl.py -u ws:/kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech \
+    python3 client/client_3_ssl.py -u ws://kaldi-feature-test.southeastasia.cloudapp.azure.com/client/ws/speech \
         -r 32000 -t abc --model="SingaporeCS_0519NNET3" \
         docker/audio/long/episode-2-government-of-the-people-and-by-the-people.wav &
     sleep 2
