@@ -1822,7 +1822,7 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "30s",
   "schemaVersion": 21,
   "style": "dark",
   "tags": [
