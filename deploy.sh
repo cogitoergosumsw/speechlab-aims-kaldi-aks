@@ -122,7 +122,7 @@ az aks create \
     --node-count 17 \
     --enable-cluster-autoscaler \
     --min-count 17 \
-    --max-count 33 \
+    --max-count 50 \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
@@ -250,7 +250,7 @@ cat > cluster-info.txt <<EOF
 KALDI SPEECH RECOGNITION SYSTEM deployed on Kubernetes
 ###################################################################
 
-Access the Master pod service at http://$MASTER_SERVICE_IP!
+Access the Master pod service at http://$MASTER_SERVICE_IP
 
 You may access the speech recognition function using a live microphone or by passing in an audio file.
 
@@ -267,7 +267,7 @@ curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --heade
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Grafana is deployed on K8s at http://$GRAFANA_SERVICE_IP!
+Grafana is deployed on K8s at http://$GRAFANA_SERVICE_IP
 
 Login to Grafana dashboard with the following credentials,
 
@@ -280,7 +280,7 @@ The custom Kaldi Speech Recognition Kubernetes dashboard is available in the Gen
 
 EOF
 
-echo "All information about the Kaldi Test Kubernetes cluster is available in cluster-info.txt in this directory!"
+echo -e "\e[32mAll information about the Kaldi Test Kubernetes cluster is available in cluster-info.txt in this directory! \e[0m"
 # clean up Prometheus and Grafana helm files
 rm -rf /tmp/pro-fana
 
