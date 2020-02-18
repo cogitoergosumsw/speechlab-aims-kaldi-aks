@@ -91,10 +91,6 @@ class Application(tornado.web.Application):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        #current_directory = os.path.dirname(os.path.abspath(__file__))
-        #parent_directory = os.path.join(current_directory, os.pardir)
-        #readme = os.path.join(parent_directory, "README.md")
-        # self.render(readme)
         self.set_status(200)
         self.finish("Speechlab Streamer")
 
@@ -114,33 +110,6 @@ def content_type_to_caps(content_type):
         return "%s, %s" % (media_type, ", ".join(["%s=%s" % (key, value) for (key, value) in attributes.iteritems()]))
     else:
         return content_type
-
-# ref https://stackoverflow.com/questions/32148713/python-tornado-confused-how-to-convert-a-blocking-function-into-a-non-blocking
-# class Worker(threading.Thread):
-#    def __init__(self, callback=None, application=None, *args, **kwargs):
-#         super(Worker, self).__init__(*args, **kwargs)
-#         self.callback = callback
-#         self.application = application
-#         logging.info("<<<<<<<<<<<<<"+str(self.application ))
-
-#    def run(self):
-#         import time
-#         logging.info("run blocking...")
-#         while len(self.application.available_workers) ==0 :
-#             time.sleep(1)
-#         self.callback('DONE')
-
-# @tornado.web.stream_request_body
-# class HttpPrepareJobHandler(tornado.web.RequestHandler):
-
-
-#     @tornado.web.asynchronous
-#     def get(self):
-#         logging.info("parent "+ str(self.application))
-#         Worker(self.worker_done, application=self.application).start()
-
-#     def worker_done(self, value):
-#         self.finish(value)
 
 class SpawnWorker(threading.Thread):
     def __init__(self, model=None, *args, **kwargs):
@@ -449,19 +418,11 @@ def main():
         ssl_options = {
             "certfile": options.certfile,
             "keyfile": options.keyfile,
-            # "certfile": '/home/appuser/opt/ssl/domain-csr.txt', #options.certfile,
-            # "keyfile": '/home/appuser/opt/ssl/account-key.txt' #options.keyfile,
         }
-
-        # ssl_options={
-        #    "certfile": os.path.join(os.path.abspath("."), "server.crt"),
-        #    "keyfile": os.path.join(os.path.abspath("."), "server.key"),
-        # }
 
         logging.info("Using SSL for serving requests")
         app.listen(options.port, ssl_options=ssl_options)
     else:
-        # app.listen(options.port).start()
         # non root can't run port above 1024
         app.listen(8080).start()
     prom.start_http_server(8081)
