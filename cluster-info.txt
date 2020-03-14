@@ -2,28 +2,24 @@
 KALDI SPEECH RECOGNITION SYSTEM deployed on Kubernetes
 ###################################################################
 
-Access the Master pod service at http://20.43.150.151
+Access the Master pod service at http://20.43.150.231
 
 You may access the speech recognition function using a live microphone or by passing in an audio file.
 
 For example,
 
-python3 client/client_3_ssl.py  -o stream  -u ws://20.43.150.151/client/ws/speech  -r 32000 -t abc --model="SingaporeCS_0519NNET3"
+python3 client/client_3_ssl.py -u ws://20.43.150.231/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav
 
 OR
 
-python3 client/client_3_ssl.py -u ws://20.43.150.151/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav
-
-OR
-
-curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://20.43.150.151/client/dynamic/recognize"
+curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --header "model: SingaporeCS_0519NNET3" --header "content-type: audio/x-wav" "http://20.43.150.231/client/dynamic/recognize"
 
 ###################################################################
 
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Grafana is deployed on K8s at http://20.43.148.58
+Grafana is deployed on K8s at http://20.43.150.244
 
 Login to Grafana dashboard with the following credentials,
 
