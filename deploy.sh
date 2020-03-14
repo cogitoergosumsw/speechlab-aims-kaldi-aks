@@ -119,10 +119,10 @@ az aks create \
     --name $KUBE_NAME \
     --service-principal $AKS_SP_ID \
     --client-secret $AKS_SP_PW \
-    --node-count 17 \
+    --node-count 3 \
     --enable-cluster-autoscaler \
-    --min-count 17 \
-    --max-count 50 \
+    --min-count 3 \
+    --max-count 5 \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
