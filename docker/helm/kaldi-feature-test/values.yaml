@@ -1,6 +1,6 @@
 models:
   # SingaporeEnglish_0519NNET3: 1  
-  SingaporeCS_0519NNET3: 3
+  SingaporeCS_0519NNET3: 50
   # SingaporeMandarin_0519NNET3: 1
   
 image:
@@ -16,7 +16,7 @@ service:
   type: LoadBalancer
   port: 8080
   resourceGroup: kaldi-test
-  loadBalancerIP: 52.148.116.121
+  loadBalancerIP: 20.43.150.151
   enablehttps: false
 
 commands:

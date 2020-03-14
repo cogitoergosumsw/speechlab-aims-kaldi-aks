@@ -257,6 +257,10 @@ You may access the speech recognition function using a live microphone or by pas
 
 For example,
 
+python3 client/client_3_ssl.py  -o stream  -u ws://$MASTER_SERVICE_IP/client/ws/speech  -r 32000 -t abc --model="SingaporeCS_0519NNET3"
+
+OR
+
 python3 client/client_3_ssl.py -u ws://$MASTER_SERVICE_IP/client/ws/speech -r 32000 -t abc --model="SingaporeCS_0519NNET3" client/audio/episode-1-introduction-and-origins.wav
 
 OR

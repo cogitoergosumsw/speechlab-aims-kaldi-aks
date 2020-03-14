@@ -8,4 +8,3 @@ models/*
 !models/README.md
 docker/audio/long/*
 !docker/audio/long/README.md
-cluster-info.txt
