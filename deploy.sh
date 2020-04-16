@@ -114,6 +114,7 @@ sleep 10
 echo "AKS Service Principal created | ID - $AKS_SP_ID | PW - $AKS_SP_PW"
 sleep 10
 
+# creating the Kubernetes cluster through command line
 az aks create \
     --resource-group $RESOURCE_GROUP \
     --name $KUBE_NAME \
@@ -126,7 +127,7 @@ az aks create \
     --node-vm-size Standard_B4ms \
     --kubernetes-version 1.15.7 \
     --zones 1 2 3 --load-balancer-sku standard
-
+    
 # require owner of subscription to integrate ACR into the AKS
 # az aks update -n $KUBE_NAME -g $RESOURCE_GROUP --attach-acr $ACR_ID
 
