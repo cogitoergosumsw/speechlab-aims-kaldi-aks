@@ -101,6 +101,10 @@ Link to Oral Presentation Slides - https://prezi.com/view/DPPcNricxEsAqJxwWSNT/
 
 Link to Oral Presentation Video - https://www.youtube.com/watch?v=le79VEOjeuQ
 
+## Short Video Intro
+
+Link to short video - https://drive.google.com/open?id=1fSQwWIR5x1Ckcq2xPvvAvfJO4o7d1cf2
+
 ## Authors/Contact
 
 **WONG SENG WEE** - AUG 2019 TO APR 2020
