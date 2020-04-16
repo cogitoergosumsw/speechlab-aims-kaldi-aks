@@ -95,6 +95,10 @@ curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --heade
 
 to be updated when more models are available for decoding
 
+## Presentation Slides
+
+Link to Oral Presentation Slides - https://prezi.com/view/DPPcNricxEsAqJxwWSNT/
+
 ## Authors/Contact
 
 **WONG SENG WEE** - AUG 2019 TO APR 2020
