@@ -103,7 +103,7 @@ Link to Oral Presentation Video - https://www.youtube.com/watch?v=le79VEOjeuQ
 
 ## Short Video Intro
 
-Link to short video - https://drive.google.com/open?id=1fSQwWIR5x1Ckcq2xPvvAvfJO4o7d1cf2
+Link to short video - https://www.youtube.com/watch?v=gTpWTiJRBQ0
 
 ## Authors/Contact
 
