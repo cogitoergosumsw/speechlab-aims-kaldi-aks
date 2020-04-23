@@ -94,3 +94,26 @@ curl  -X PUT -T docker/audio/long/episode-1-introduction-and-origins.wav --heade
 4. SingaporeMandarin_0519NNET3
 
 to be updated when more models are available for decoding
+
+## Oral Presentation
+
+Link to Oral Presentation Slides - https://prezi.com/view/DPPcNricxEsAqJxwWSNT/
+
+Link to Oral Presentation Video - https://www.youtube.com/watch?v=le79VEOjeuQ
+
+## Short Video Intro
+
+Link to short video - https://www.youtube.com/watch?v=gTpWTiJRBQ0
+
+## Authors/Contact
+
+**WONG SENG WEE** - AUG 2019 TO APR 2020
+
+## Acknowledgements
+
+* relevant AISG personnel involved (Cheewei)
+* Ly for her help in contacting AISG for relevant help
+* Prof. Chng for telling me his expectations
+* https://github.com/alumae/kaldi-gstreamer-server
+* https://github.com/jcsilva/docker-kaldi-gstreamer-server
+* https://github.com/wudaown/kaldi-aks
