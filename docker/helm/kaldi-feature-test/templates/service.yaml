@@ -23,7 +23,6 @@ spec:
       port: 80
       {{- end}}
       targetPort: {{ .Values.service.port }}
-      name: kaldi-service
   selector:
     app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}  
