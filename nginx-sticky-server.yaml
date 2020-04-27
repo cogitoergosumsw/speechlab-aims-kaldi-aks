@@ -20,4 +20,4 @@ spec:
       - backend:
           # change this to the Speechlab master service name and port
           serviceName: kaldi-feature-test-master
-          servicePort: 8081
+          servicePort: 80

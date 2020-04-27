@@ -22,7 +22,7 @@ spec:
       {{- else }}
       port: 80
       {{- end}}
-      targetPort: 50001
+      targetPort: {{ .Values.service.port }}
       name: kaldi-service
   selector:
     app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
