@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu
 
+export DOCKER_IMAGE=kaldi-speechlab
 cat <<EOF
 
 KALDI SPEECH RECOGNITION SYSTEM deployed on Kubernetes
@@ -60,13 +61,33 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # Flannel is used as the network overlay, for nodes in the cluster to communicate with each other
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
+echo -e '\033[0;31mBuilding custom SpeechLab Docker image...\n\033[m'
+sleep 1
+
+CURRENT_DIRECTORY=$(pwd)
+
+sudo cp ~/.kube/config ../docker/secret/
+sleep 1
+docker build -t $DOCKER_IMAGE ../docker/
+
 echo -e '\033[0;31mSetting up local Docker container registry on current node...\n\033[m'
 echo 'All containers in the cluster will pull the Docker image from the current container registry. \n'
 sleep 1
 
+# Local Docker registry is hosted on this machine at port 5000
+docker run -d -p 5000:5000 --name registry registry:2
 
+# Tag custom Docker image to push to local registry
+docker image tag $DOCKER_IMAGE localhost:5000/$DOCKER_IMAGE
+
+# Push custom Docker image to this registry
+docker push localhost:5000/$DOCKER_IMAGE
+
+echo -e '\033[0;31mInitialising Kaldi Speech Recognition System...\n\033[m'
+sudo ./local_deploy.sh
 
 echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
 echo -e 'you may now join other nodes to this Kubernetes cluster by running this command - \033[0;32msudo kubeadm join [your unique string from the kubeadm init command]\033[m \n'
 echo 'you can find the unique string from \033[0;32mkube_details.txt\033[m \n'
-sleep 1
+
+exit 0
