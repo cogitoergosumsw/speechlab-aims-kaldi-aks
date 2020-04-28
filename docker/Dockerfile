@@ -54,7 +54,7 @@ RUN pip3 install futures requests pyasn1 schedule==0.6.0 setuptools python-dateu
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
     cd jansson-2.7 && \
-    ./configure && make -j 8 && make -j 4 check &&  make -j 4 install && \
+    ./configure && make -j 4 && make -j 4 check &&  make -j 4 install && \
     echo "/usr/local/lib" >> /etc/ld.so.conf.d/jansson.conf && ldconfig && \
     rm /jansson-2.7.tar.bz2 && rm -rf /jansson-2.7
 
