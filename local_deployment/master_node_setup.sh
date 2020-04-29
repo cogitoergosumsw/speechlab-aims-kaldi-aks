@@ -56,15 +56,14 @@ echo 'this process may take a while, please wait patiently \n'
 sleep 1
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 > kube_details.txt
-echo 'Kubernetes cluster is successfully set up. \n'
+echo -e '\033[0;32mKubernetes cluster is successfully set up.\n\033[m'
 
 echo -e '\033[0;32mConfiguring Kubernetes Cluster...\n\033[m'
 sleep 1
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown -R $USER /home/$USER/.kube
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo chown -R $(id -u):$(id -g) $HOME/.kube
 
 # install flannel CNI
 # Flannel is used as the network overlay, for nodes in the cluster to communicate with each other
