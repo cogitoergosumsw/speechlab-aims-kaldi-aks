@@ -3,6 +3,8 @@ set -eu
 
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
+export USER_NAME=speechlablocal
+export NAMESPACE=kaldi-test
 
 cat <<EOF
 
@@ -63,13 +65,14 @@ sleep 1
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown -R $(id -u):$(id -g) $HOME/.kube
+sudo chown -R $(id -u):$(id -g) $HOME/.kube/
+sudo chown -R $USER_NAME /home/$USER_NAME/.kube/
 
 # install flannel CNI
 # Flannel is used as the network overlay, for nodes in the cluster to communicate with each other
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
-echo -e '\033[0;31mBuilding custom SpeechLab Docker image...\n\033[m'
+echo -e '\033[0;32mBuilding custom SpeechLab Docker image...\n\033[m'
 sleep 1
 
 CURRENT_DIRECTORY=$(pwd)
@@ -78,7 +81,7 @@ sudo cp ~/.kube/config ../docker/secret/
 sleep 1
 docker build -t $DOCKER_IMAGE ../docker/
 
-echo -e '\033[0;31mSetting up local Docker container registry on current node...\n\033[m'
+echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
 echo 'All containers in the cluster will pull the Docker image from the current container registry. \n'
 sleep 1
 
@@ -91,8 +94,14 @@ docker image tag $DOCKER_IMAGE localhost:5000/$DOCKER_IMAGE
 # Push custom Docker image to this registry
 docker push localhost:5000/$DOCKER_IMAGE
 
-echo -e '\033[0;31mInitialising Kaldi Speech Recognition System...\n\033[m'
+echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
+sudo swapoff -a
+strace -eopenat kubectl version
 sudo ./local_deploy.sh
+
+kubectl create namespace $NAMESPACE
+
+kubectl config set-context --current --namespace $NAMESPACE
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller

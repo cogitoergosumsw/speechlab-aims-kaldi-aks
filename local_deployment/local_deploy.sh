@@ -15,7 +15,9 @@ if [ $NUM_MODELS -gt 1 ]; then
     echo "Speech Recognition models detected"
 
     sudo cp -r ./models/ /opt/models
-    echo -e '\033[0;31mModels copied to mount directory!\n\033[m'
+    sudo swapoff -a
+    strace -eopenat kubectl version
+    echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
 else
     printf "\n"
     printf "##########################################################################\n"
