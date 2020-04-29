@@ -65,7 +65,7 @@ sleep 1
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown -R $(id -u):$(id -g) $HOME/.kube/
+sudo chown -R $(id -u):$(id -g) $HOME/.kube/config
 sudo chown -R $USER_NAME /home/$USER_NAME/.kube/
 
 # install flannel CNI
