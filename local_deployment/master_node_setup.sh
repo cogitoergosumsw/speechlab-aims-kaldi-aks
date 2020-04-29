@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -u
 
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
