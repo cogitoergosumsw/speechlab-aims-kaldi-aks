@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+set -eu
 
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
@@ -20,6 +20,8 @@ sudo apt update && sudo apt upgrade -y
 
 echo -e '\033[0;32mInstalling Docker...\n\033[m'
 
+sudo apt autoremove -y
+
 sudo apt install \
     apt-transport-https \
     ca-certificates \
@@ -37,9 +39,7 @@ sudo add-apt-repository \
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
-# sudo groupadd docker
 sudo usermod -aG docker $USER
-newgrp docker
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
