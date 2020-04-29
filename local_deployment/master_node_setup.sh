@@ -30,6 +30,11 @@ sudo apt install \
     software-properties-common -y
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
 
 sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
@@ -44,6 +49,7 @@ sudo usermod -aG docker $USER
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
 sudo apt install -y kubelet kubeadm kubectl -y
+sudo apt-mark hold kubelet kubeadm kubectl
 
 echo -e '\033[0;32mInitializing Kubernetes Cluster...\n\033[m'
 echo 'this process may take a while, please wait patiently \n'
