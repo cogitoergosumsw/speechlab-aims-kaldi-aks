@@ -81,7 +81,7 @@ RUN git clone https://github.com/kaldi-asr/kaldi && \
     cd /home/appuser/opt/kaldi && \
     git reset --hard $KALDI_SHA1 && \
     cd /home/appuser/opt/kaldi/tools && \
-    make -j 2 && \
+    make -j 4 && \
     ./install_portaudio.sh
 
 RUN cd /home/appuser/opt/kaldi/src && ./configure --shared --mathlib=ATLAS && \
@@ -129,18 +129,15 @@ ENV TINI_VERSION v0.18.0
 RUN wget https://github.com/krallin/tini/releases/download/v0.18.0/tini
 RUN chmod +x /home/appuser/opt/tini
 
-
 # copy kube config
 RUN mkdir -p /home/appuser/.kube
 COPY --chown=appuser:appuser secret/config /home/appuser/.kube/config
-
 
 # install kubectl command for delete completed jobs
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 
-
 COPY --chown=appuser:appuser scripts/cronjob.py scripts/cronjob_delete_kubernetes_jobs.sh /home/appuser/opt/
 
-COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
+# COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
 
