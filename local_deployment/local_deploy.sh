@@ -15,6 +15,7 @@ if [ $NUM_MODELS -gt 1 ]; then
     echo "Speech Recognition models detected"
 
     sudo cp -r ./models/ /opt/models
+    echo -e '\033[0;31mModels copied to mount directory!\n\033[m'
 else
     printf "\n"
     printf "##########################################################################\n"
@@ -23,3 +24,5 @@ else
 
     exit 1
 fi
+
+exit 0
