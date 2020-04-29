@@ -14,7 +14,7 @@ NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
 if [ $NUM_MODELS -gt 1 ]; then
     echo "Speech Recognition models detected"
 
-    sudo cp -r ./models/ /home/appuser/opt/models
+    sudo cp -r ./models/ /opt/models
 else
     printf "\n"
     printf "##########################################################################\n"
