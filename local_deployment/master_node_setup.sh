@@ -105,26 +105,28 @@ chmod u+x /tmp/install-helm.sh
 /tmp/install-helm.sh
 
 # prompt to put the models in the models directory
-NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
-if [ $NUM_MODELS -gt 1 ]; then
-    echo "Speech Recognition models detected"
+sudo cp -r ./models/ /opt/models
+# NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
+# if [ $NUM_MODELS -gt 1 ]; then
+#     echo "Speech Recognition models detected"
 
-    sudo cp -r ./models/ /opt/models
-    sudo swapoff -a
-    strace -eopenat kubectl version
-    echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
-else
-    printf "\n"
-    printf "##########################################################################\n"
-    echo "Please put at least one model in the ./models directory before continuing"
-    printf "##########################################################################\n"
-
-    exit 1
-fi
+#     sudo cp -r ./models/ /opt/models
+#     sudo swapoff -a
+#     strace -eopenat kubectl version
+#     echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
+# else
+#     printf "\n"
+#     printf "##########################################################################\n"
+#     echo "Please put at least one model in the ./models directory before continuing"
+#     printf "##########################################################################\n"
+#     exit 1
+# fi
 
 kubectl create namespace $NAMESPACE
 
 kubectl config set-context --current --namespace $NAMESPACE
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # installing tiller, part of helm installation
 kubectl create serviceaccount --namespace kube-system tiller
