@@ -2,6 +2,8 @@
 set -eu
 
 export DOCKER_IMAGE=kaldi-speechlab
+export KUBE_NAME=kaldi-feature-test
+
 cat <<EOF
 
 KALDI SPEECH RECOGNITION SYSTEM deployed on Kubernetes
@@ -86,6 +88,14 @@ docker push localhost:5000/$DOCKER_IMAGE
 echo -e '\033[0;31mInitialising Kaldi Speech Recognition System...\n\033[m'
 sudo ./local_deploy.sh
 
+# installing tiller, part of helm installation
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
+
+kubectl apply -f secret/run_kubernetes_secret.yaml
+
+helm install --name $KUBE_NAME --namespace $NAMESPACE ../docker/helm/kaldi-feature-test/
 echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
 echo -e 'you may now join other nodes to this Kubernetes cluster by running this command - \033[0;32msudo kubeadm join [your unique string from the kubeadm init command]\033[m \n'
 echo 'you can find the unique string from \033[0;32mkube_details.txt\033[m \n'

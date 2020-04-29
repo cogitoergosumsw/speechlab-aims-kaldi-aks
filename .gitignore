@@ -8,3 +8,5 @@ models/*
 !models/README.md
 docker/audio/long/*
 !docker/audio/long/README.md
+local_deployment/models/*
+!local_deployment/models/README.md
