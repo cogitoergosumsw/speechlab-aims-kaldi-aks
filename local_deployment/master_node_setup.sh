@@ -50,7 +50,7 @@ sudo usermod -aG docker $USER
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
-sudo apt install -y kubelet kubeadm kubectl -y
+sudo apt-get install -qy kubelet=1.15.7 kubeadm=1.15.7 kubectl=1.15.7
 sudo apt-mark hold kubelet kubeadm kubectl
 
 echo -e '\033[0;32mInitializing Kubernetes Cluster...\n\033[m'
@@ -107,6 +107,9 @@ chmod u+x /tmp/install-helm.sh
 # prompt to put the models in the models directory
 sudo swapoff -a
 sudo cp -r ./models/ /opt/models
+
+echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
+
 # NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
 # if [ $NUM_MODELS -gt 1 ]; then
 #     echo "Speech Recognition models detected"
