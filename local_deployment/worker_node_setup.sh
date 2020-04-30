@@ -18,7 +18,7 @@ EOF
 echo -e '\033[0;32mPlease enter the master node IP address for Kubernetes cluster set up\n\033[m'
 read -p 'Master node IP address: ' MASTER_IP
 
-echo -e echo -e '\033[0;32mEnter the command to allow this worker node to join the Kubernetes cluster\033[m e.g kubeadm join 172.16.0.5:6443 --token flk0z4.r11s0asq3v3bcno2 --discovery-token-ca-cert-hash sha256:aadf4c3170a30639e90b3b48732f7202747db842dc64c5292c48174388 \n'
+echo -e '\033[0;32mEnter the command to allow this worker node to join the Kubernetes cluster\033[m e.g \033[0;31m kubeadm join 172.16.0.5:6443 --token flk0z4.r11s0asq3v3bcno2 --discovery-token-ca-cert-hash sha256:aadf4c3170a30639e90b3b48732f7202747db842dc64c5292c48174388 \033[m\n'
 read -p 'Join command: ' JOIN_COMMAND
 
 echo -e '\033[0;32mUpdating system software...\n\033[m'
