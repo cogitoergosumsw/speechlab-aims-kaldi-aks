@@ -54,7 +54,7 @@ sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
 
 echo -e '\033[0;32mInitializing Kubernetes Cluster...\n\033[m'
-echo 'this process may take a while, please wait patiently \n'
+echo -e 'this process may take a few minutes, please wait patiently \n'
 sleep 1
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 > kube_details.txt
@@ -82,7 +82,7 @@ sleep 1
 docker build -t $DOCKER_IMAGE ../docker/
 
 echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
-echo 'All containers in the cluster will pull the Docker image from the current container registry. \n'
+echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
 sleep 1
 
 # Local Docker registry is hosted on this machine at port 5000
@@ -126,7 +126,8 @@ echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
 #     exit 1
 # fi
 
-kubectl create namespace $NAMESPACE
+# kubectl create namespace $NAMESPACE
+kubectl create -f test-namespace.yaml
 
 kubectl config set-context --current --namespace $NAMESPACE
 
