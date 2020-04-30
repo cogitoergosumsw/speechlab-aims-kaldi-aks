@@ -1,0 +1,34 @@
+models:
+  # SingaporeEnglish_0519NNET3: 1  
+  SingaporeCS_0519NNET3: 3
+  # SingaporeMandarin_0519NNET3: 1
+  
+image:
+  # pls change to own image repository for production
+  repository: heyhujiao/kaldi-speechlab
+  tag: latest
+  pullPolicy: Always
+  # pullSecrets: azure-cr-secret
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: LoadBalancer
+  port: 8080
+  # pls change to own resource group for production
+  resourceGroup: kaldi-test
+  enablehttps: false
+
+commands:
+  master:
+    - '"/home/appuser/opt/tini"' 
+    - '"--"'
+    - '"/home/appuser/opt/start_master.sh"'
+  worker:
+  # see _helpers.tpl on how full command constructed
+    pre:
+      - '"/home/appuser/opt/tini"' 
+      - '"--"'
+      - '"/home/appuser/opt/start_worker.sh"'
+

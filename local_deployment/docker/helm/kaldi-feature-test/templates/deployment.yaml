@@ -1,0 +1,132 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "kalditest.master.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+    helm.sh/chart: {{ include "kalditest.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8081'
+      labels:
+        app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      # imagePullSecrets:
+      #   - name: {{ .Values.image.pullSecrets }}
+      containers:
+        - name: {{ include "kalditest.master.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [{{ include "kalditest.master.command" . }}]
+          envFrom:
+          - secretRef:
+              name: environment-variables-master-secret
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: prometheus
+              containerPort: 8081
+          resources:
+            limits:
+              cpu: 2
+              memory: "2Gi"
+            requests:
+              cpu: 2
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /
+              {{- if eq .Values.service.enablehttps true}}
+              scheme: HTTPS
+              port: 8080
+              {{- else }}
+              port: http
+              {{- end}}
+              periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /
+              {{- if eq .Values.service.enablehttps true}}
+              scheme: HTTPS
+              port: 8080
+              {{- else }}
+              port: http
+              {{- end}}
+              periodSeconds: 60
+    
+
+{{- range $model_name, $replicas := .Values.models }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-"  }}
+  labels:
+    app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
+    helm.sh/chart: {{ include "kalditest.chart" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+spec:
+  replicas: {{ $replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name  | lower | replace "_" "-"}}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8081'
+      labels:
+        app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-" }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+    spec:
+      imagePullSecrets:
+        - name: {{ $.Values.image.pullSecrets }}
+      containers:
+        - name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower  | replace "_" "-"}}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          command: [{{ include "kalditest.worker.command" $ }}]
+          envFrom:
+          - secretRef:
+              name: environment-variables-workers-secret
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: prometheus
+              containerPort: 8081
+          resources:
+            limits:
+              cpu: 1
+              memory: "5Gi"
+            requests:
+              cpu: 1
+              memory: "5Gi"
+          env:
+          - name: MODEL_DIR
+            value: {{ $model_name }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+          volumeMounts:
+          - name: local-models
+            mountPath: /home/appuser/opt/models
+      volumes:
+        - name: local-models
+          persistentVolumeClaim:
+            claimName: local-models-pvc
+{{- end }}

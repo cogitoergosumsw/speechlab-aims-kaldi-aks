@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  master:
+    image: kalditest.azurecr.io/kalditestscaled
+    ports:
+     - "8080:8080"
+    entrypoint: ["/home/appuser/opt/tini", "--", "/home/appuser/opt/start_master.sh"]
+    volumes:
+    #   - "${MODEL_DIR}:/home/appuser/opt/models"
+        - "./scripts/master_server.py:/home/appuser/opt/kaldi-gstreamer-server/kaldigstserver/master_server.py"
+    env_file:
+     - ./secret/docker-compose-local.env
+  worker:
+    image: kalditest.azurecr.io/kalditestscaled
+    depends_on:
+      - master
+    #entrypoint: ["/home/appuser/opt/tini", "--", "/home/appuser/opt/start_worker.sh", "-m", "master:8080", "-y", "/home/appuser/opt/models/gstream-online2/engine.yaml"]
+    #entrypoint: ["/home/appuser/opt/tini", "--", "/home/appuser/opt/start_worker.sh", "-m", "master:8080"]
+    entrypoint: ["/home/appuser/opt/tini", "--", "/home/appuser/opt/start_worker.sh"]
+    
+    #volumes:
+    #   - "${MODEL_DIR}:/home/appuser/opt/models"
+    #    - "./scripts/worker.py:/home/appuser/opt/kaldi-gstreamer-server/kaldigstserver/worker.py"
+    #    - "./scripts/start_worker.sh:/home/appuser/opt/start_worker.sh"
+    env_file:
+     - ./secret/docker-compose-local.env
+    privileged: true
+
+        

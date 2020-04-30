@@ -77,13 +77,14 @@ sleep 1
 
 CURRENT_DIRECTORY=$(pwd)
 
-sudo cp ~/.kube/config ../docker/secret/
+sudo cp ~/.kube/config secret/
 sleep 1
-docker build -t $DOCKER_IMAGE ../docker/
+docker build -t $DOCKER_IMAGE docker/
+sleep 1
+docker push hyehujiao/$DOCKER_IMAGE
 
-echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
-echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
-sleep 1
+# echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
+# echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
 
 # KIV: issue with worker nodes pulling image from local Docker registry
 #######################################################################
@@ -145,10 +146,10 @@ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admi
 helm init --service-account tiller
 
 kubectl apply -f secret/run_kubernetes_secret.yaml
+kubectl apply -f pv/local-models-pv.yaml
+kubectl apply -f pv/local-models-pvc.yaml
 
 helm install --name $KUBE_NAME --namespace $NAMESPACE ../docker/helm/kaldi-feature-test/
 echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
-echo -e 'you may now join other nodes to this Kubernetes cluster by running this command - \033[0;32msudo kubeadm join [your unique string from the kubeadm init command]\033[m \n'
-echo 'you can find the unique string from \033[0;32mkube_details.txt\033[m \n'
 
 exit 0

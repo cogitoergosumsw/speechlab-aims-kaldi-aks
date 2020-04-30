@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kalditest.master.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+    helm.sh/chart: {{ include "kalditest.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }} 
+  type: {{ .Values.service.type }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: '8081'
+  ports:
+    - protocol: TCP
+      {{- if eq .Values.service.enablehttps true}}
+      port: 443
+      {{- else }}
+      port: 80
+      {{- end}}
+      targetPort: {{ .Values.service.port }}
+  selector:
+    app.kubernetes.io/name: {{ include "kalditest.master.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}  
+
+{{- range $model_name, $replicas := $.Values.models }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kalditest.worker.name" $ }}{{ printf "-%s" $model_name | lower | replace "_" "-"  }}
+  labels:
+    app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}
+    helm.sh/chart: {{ include "kalditest.chart" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+spec:
+  type: {{ $.Values.service.type }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: '8081'
+  ports:
+    - protocol: TCP
+      {{- if eq $.Values.service.enablehttps true}}
+      port: 443
+      {{- else }}
+      port: 80
+      {{- end}}
+      targetPort: {{ $.Values.service.port }}    
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "kalditest.worker.name" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}  
+{{- end }}
