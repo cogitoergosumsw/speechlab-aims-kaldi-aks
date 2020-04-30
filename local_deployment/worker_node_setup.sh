@@ -81,6 +81,6 @@ sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
 echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
-docker pull heyhujiao/kaldi-speechlab
+docker pull heyhujiao/$DOCKER_IMAGE
 
 exit 0

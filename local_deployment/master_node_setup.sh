@@ -77,11 +77,12 @@ sleep 1
 
 CURRENT_DIRECTORY=$(pwd)
 
-sudo cp ~/.kube/config secret/
+sudo cp ~/.kube/config docker/secret/
 sleep 1
 docker build -t $DOCKER_IMAGE docker/
 sleep 1
-docker push hyehujiao/$DOCKER_IMAGE
+# change this to the repository to push the Docker image to
+docker push heyhujiao/$DOCKER_IMAGE
 
 # echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
 # echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
