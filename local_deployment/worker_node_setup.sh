@@ -53,4 +53,11 @@ echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo swapoff -a
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown -R $(id -u):$(id -g) $HOME/.kube/config
+sudo chown -R $USER_NAME /home/$USER_NAME/.kube/
+
 exit 0
