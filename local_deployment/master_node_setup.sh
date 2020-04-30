@@ -50,7 +50,7 @@ sudo usermod -aG docker $USER
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
-sudo apt-get install -qy kubelet=1.15.7 kubeadm=1.15.7 kubectl=1.15.7
+sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
 
 echo -e '\033[0;32mInitializing Kubernetes Cluster...\n\033[m'
