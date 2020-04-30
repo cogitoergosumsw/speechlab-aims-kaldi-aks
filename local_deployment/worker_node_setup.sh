@@ -73,8 +73,8 @@ chmod u+x /tmp/install-helm.sh
 
 # copy the Kubernetes config file from the master node to the worker node
 echo -e '\033[0;32mBasic setup on worker node is complete! \n\033[m'
-echo -e '\033[0;31m Key in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
+echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
-sudo chown -R $(id -u):$(id -g) $HOME/.kube
+sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
 exit 0
