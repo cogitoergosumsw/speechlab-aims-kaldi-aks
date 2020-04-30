@@ -55,10 +55,6 @@ sudo apt install docker-ce docker-ce-cli containerd.io -y
 sudo usermod -aG docker $USER
 newgrp docker
 
-echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
-# change this to the repository to pull the Docker image from
-docker pull heyhujiao/kaldi-speechlab
-
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
 sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
@@ -67,7 +63,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo swapoff -a
 
 mkdir -p $HOME/.kube
-sudo chown -R $(id -u):$(id -g) $HOME/.kube
+sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
 sudo $JOIN_COMMAND
 
@@ -82,5 +78,9 @@ echo -e '\033[0;31mKey in the password to the master node to enable transfer of 
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
 sleep 1
 sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
+
+echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
+# change this to the repository to pull the Docker image from
+docker pull heyhujiao/kaldi-speechlab
 
 exit 0
