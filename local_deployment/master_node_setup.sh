@@ -97,7 +97,6 @@ docker push localhost:5000/$DOCKER_IMAGE
 echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
 sudo swapoff -a
 strace -eopenat kubectl version
-# sudo ./local_deploy.sh
 
 # installing helm
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
