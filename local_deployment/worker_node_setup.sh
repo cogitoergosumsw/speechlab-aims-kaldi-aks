@@ -18,7 +18,7 @@ EOF
 echo -e '\033[0;32mPlease enter the master node IP address for Kubernetes cluster set up\n\033[m'
 read -p 'Master node IP address: ' MASTER_IP
 
-echo -e '\033[0;32mEnter the command to allow this worker node to join the Kubernetes cluster\033[m e.g \033[0;31m kubeadm join 172.16.0.5:6443 --token flk0z4.r11s0asq3v3bcno2 --discovery-token-ca-cert-hash sha256:aadf4c3170a30639e90b3b48732f7202747db842dc64c5292c48174388 \033[m\n'
+echo -e '\033[0;32mEnter the command to allow this worker node to join the Kubernetes cluster\033[m e.g\033[0;31m kubeadm join 172.16.0.5:6443 --token flk0z4.r11s0asq3v3bcno2 --discovery-token-ca-cert-hash sha256:aadf4c3170a30639e90b3b48732f7202747db842dc64c5292c48174388 \033[m\n'
 read -p 'Join command: ' JOIN_COMMAND
 
 echo -e '\033[0;32mUpdating system software...\n\033[m'
@@ -53,6 +53,11 @@ sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
+newgrp docker
+
+echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
+# change this to the repository to pull the Docker image from
+docker pull heyhujiao/kaldi-speechlab
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
@@ -75,6 +80,7 @@ chmod u+x /tmp/install-helm.sh
 echo -e '\033[0;32mBasic setup on worker node is complete! \n\033[m'
 echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
+sleep 1
 sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
 exit 0

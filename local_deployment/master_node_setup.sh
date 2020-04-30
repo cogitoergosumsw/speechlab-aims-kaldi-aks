@@ -85,14 +85,21 @@ echo -e '\033[0;32mSetting up local Docker container registry on current node...
 echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
 sleep 1
 
+# KIV: issue with worker nodes pulling image from local Docker registry
+#######################################################################
 # Local Docker registry is hosted on this machine at port 5000
-docker run -d -p 5000:5000 --name registry registry:2
+# docker run -d -p 5000:5000 --name registry registry:2
 
 # Tag custom Docker image to push to local registry
-docker image tag $DOCKER_IMAGE localhost:5000/$DOCKER_IMAGE
+# docker image tag $DOCKER_IMAGE localhost:5000/$DOCKER_IMAGE
 
 # Push custom Docker image to this registry
-docker push localhost:5000/$DOCKER_IMAGE
+# docker push localhost:5000/$DOCKER_IMAGE
+#######################################################################
+
+echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
+# change this to the repository to pull the Docker image from
+docker pull heyhujiao/kaldi-speechlab
 
 echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
 sudo swapoff -a
