@@ -105,6 +105,7 @@ chmod u+x /tmp/install-helm.sh
 /tmp/install-helm.sh
 
 # prompt to put the models in the models directory
+sudo swapoff -a
 sudo cp -r ./models/ /opt/models
 # NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
 # if [ $NUM_MODELS -gt 1 ]; then
