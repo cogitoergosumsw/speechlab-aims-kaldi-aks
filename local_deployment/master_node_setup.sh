@@ -48,6 +48,9 @@ sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
 
+echo -e '\033[0;32mPlease enter your Docker Hub username\n\033[m'
+read -p 'Username: ' DOCKER_USERNAME
+
 # might remove in the future to facilitate a better solution to push Docker image
 sudo docker login
 
@@ -75,6 +78,9 @@ sudo chown -R $USER_NAME /home/$USER_NAME/.kube/
 # Flannel is used as the network overlay, for nodes in the cluster to communicate with each other
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
+kubectl create namespace $NAMESPACE
+kubectl config set-context --current --namespace $NAMESPACE
+
 echo -e '\033[0;32mBuilding custom SpeechLab Docker image...\n\033[m'
 sleep 1
 
@@ -82,10 +88,10 @@ CURRENT_DIRECTORY=$(pwd)
 
 sudo cp ~/.kube/config docker/secret/
 sleep 1
-docker build -t heyhujiao/$DOCKER_IMAGE docker/
+docker build -t $DOCKER_USERNAME/$DOCKER_IMAGE docker/
 sleep 1
 # change this to the repository to push the Docker image to
-sudo docker push heyhujiao/$DOCKER_IMAGE
+sudo docker push $DOCKER_USERNAME/$DOCKER_IMAGE
 
 # echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
 # echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
@@ -104,7 +110,7 @@ sudo docker push heyhujiao/$DOCKER_IMAGE
 
 echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
-docker pull heyhujiao/kaldi-speechlab
+sudo docker pull $DOCKER_USERNAME/kaldi-speechlab
 
 echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
 sudo swapoff -a
@@ -137,11 +143,6 @@ echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
 #     exit 1
 # fi
 
-# kubectl create namespace $NAMESPACE
-kubectl create -f test-namespace.yaml
-
-kubectl config set-context --current --namespace $NAMESPACE
-
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # installing tiller, part of helm installation
@@ -149,7 +150,7 @@ kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 
-kubectl apply -f secret/run_kubernetes_secret.yaml
+kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
 kubectl apply -f pv/local-models-pvc.yaml
 
