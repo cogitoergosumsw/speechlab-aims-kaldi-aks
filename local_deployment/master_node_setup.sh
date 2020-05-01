@@ -47,6 +47,10 @@ sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
+newgrp docker
+
+# might remove in the future to facilitate a better solution to push Docker image
+docker login
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
