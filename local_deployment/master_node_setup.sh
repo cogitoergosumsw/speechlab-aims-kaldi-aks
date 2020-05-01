@@ -91,7 +91,7 @@ sleep 1
 docker build -t $DOCKER_USERNAME/$DOCKER_IMAGE docker/
 sleep 1
 # change this to the repository to push the Docker image to
-sudo docker push $DOCKER_USERNAME/$DOCKER_IMAGE
+docker push $DOCKER_USERNAME/$DOCKER_IMAGE
 
 # echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
 # echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
@@ -110,38 +110,16 @@ sudo docker push $DOCKER_USERNAME/$DOCKER_IMAGE
 
 echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
-sudo docker pull $DOCKER_USERNAME/kaldi-speechlab
+docker pull $DOCKER_USERNAME/kaldi-speechlab
 
 echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
-sudo swapoff -a
-strace -eopenat kubectl version
-
-# installing helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
+# sudo swapoff -a
+# strace -eopenat kubectl version
 
 # prompt to put the models in the models directory
-sudo swapoff -a
 sudo cp -r ./models/ /opt/models
 
 echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
-
-# NUM_MODELS=$(find ./models/ -maxdepth 1 -type d | wc -l)
-# if [ $NUM_MODELS -gt 1 ]; then
-#     echo "Speech Recognition models detected"
-
-#     sudo cp -r ./models/ /opt/models
-#     sudo swapoff -a
-#     strace -eopenat kubectl version
-#     echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
-# else
-#     printf "\n"
-#     printf "##########################################################################\n"
-#     echo "Please put at least one model in the ./models directory before continuing"
-#     printf "##########################################################################\n"
-#     exit 1
-# fi
 
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
@@ -153,6 +131,11 @@ helm init --service-account tiller
 kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
 kubectl apply -f pv/local-models-pvc.yaml
+
+# installing helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
 
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
 echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
