@@ -9,35 +9,18 @@ import sys
 
 import logging
 
-IMAGE = "kalditest.azurecr.io/kalditestscaled"
-AZURE_STORAGE_ACCOUNT = os.getenv("AZURE_STORAGE_ACCOUNT", False)
-AZURE_STORAGE_ACCESS_KEY = os.getenv("AZURE_STORAGE_ACCESS_KEY", False)
-AZURE_CONTAINER = os.getenv("AZURE_CONTAINER", False)
+# TODO: remember to change this field to the name of Docker image used
+IMAGE = "heyhujiao/kaldi-speechlab"
 MASTER = os.getenv("MASTER", False)
 NAMESPACE = os.getenv("NAMESPACE", False)
-MODELS_FILESHARE_SECRET = os.getenv("MODELS_FILESHARE_SECRET", False)
-MODELS_SHARE_NAME = os.getenv("MODELS_SHARE_NAME", False)
 
 if (NAMESPACE == False or
-    AZURE_STORAGE_ACCOUNT == False or
-    AZURE_STORAGE_ACCESS_KEY == False or
-    AZURE_CONTAINER == False or
     MASTER == False or
-    NAMESPACE == False or
-    MODELS_FILESHARE_SECRET == False or
-        MODELS_SHARE_NAME == False):
+    NAMESPACE == False):
     sys.exit("No values for NAMESPACE="
              + str(NAMESPACE)
-             + " AZURE_STORAGE_ACCOUNT="
-             + str(AZURE_STORAGE_ACCOUNT)
-             + " AZURE_STORAGE_ACCESS_KEY="
-             + str(AZURE_STORAGE_ACCESS_KEY)
-             + " AZURE_CONTAINER="
-             + str(AZURE_CONTAINER)
              + " MASTER="+str(MASTER)
-             + " NAMESPACE="+str(NAMESPACE)
-             + " MODELS_FILESHARE_SECRET="+str(MODELS_FILESHARE_SECRET)
-             + " MODELS_SHARE_NAME="+str(MODELS_SHARE_NAME))
+             + " NAMESPACE="+str(NAMESPACE))
 
 config.load_kube_config()
 
@@ -81,25 +64,18 @@ def create_job(MODEL):
             "prometheus.io/port": "8081"
         }
     )
-    azure_file_volume = client.V1AzureFileVolumeSource(
-        read_only=True,
-        secret_name=MODELS_FILESHARE_SECRET,
-        share_name=MODELS_SHARE_NAME
-    )
     volume = client.V1Volume(
-        name="models-azurefiles",
-        azure_file=azure_file_volume
+        # change these values to the same names you used in deployment.yaml
+        name="local-models",
+        persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
+            claim_name="local-models-pvc"
+        )
     )
     env_vars = {
-        "AZURE_STORAGE_ACCOUNT": AZURE_STORAGE_ACCOUNT,
-        "AZURE_STORAGE_ACCESS_KEY": AZURE_STORAGE_ACCESS_KEY,
-        "AZURE_CONTAINER": AZURE_CONTAINER,
         "MASTER": MASTER,
         "NAMESPACE": NAMESPACE,
         "RUN_FREQ": "ONCE",
         "MODEL_DIR": MODEL,  # important
-        "MODELS_FILESHARE_SECRET": MODELS_FILESHARE_SECRET,
-        "MODELS_SHARE_NAME": MODELS_SHARE_NAME
     }
 
     env_list = []
@@ -124,8 +100,9 @@ def create_job(MODEL):
                                        requests={"memory": "5G", "cpu": "1"}
                                        ),
                                    volume_mounts=[client.V1VolumeMount(
+                                        # change these values to the same names you used in deployment.yaml
                                         mount_path="/home/appuser/opt/models",
-                                        name="models-azurefiles",
+                                        name="local-models",
                                         read_only=True
                                     )]
     )
