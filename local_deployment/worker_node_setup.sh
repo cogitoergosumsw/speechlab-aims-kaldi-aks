@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu
 
+# installing helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
+
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
 export USER_NAME=speechlablocal
@@ -79,11 +84,15 @@ echo -e '\033[0;32m\nBasic setup on worker node is complete. We are almost done!
 echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
 sleep 1
-sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
 echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
 docker pull $DOCKER_USERNAME/$DOCKER_IMAGE
+
+# prompt to put the models in the models directory
+sudo cp -r ./models/ /opt/models
+
+sudo chown -R $(id -u):$(id -g) $HOME/.kube
 
 echo -e '\033[0;32m\nWorker node setup complete.\n\033[m'
 

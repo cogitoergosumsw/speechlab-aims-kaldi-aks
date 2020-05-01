@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu
 
+# installing helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
+
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
 export USER_NAME=speechlablocal
@@ -132,12 +137,11 @@ kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
 kubectl apply -f pv/local-models-pvc.yaml
 
-# installing helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
+helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/$KUBE_NAME/
+sleep 1
+PRIVATE_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
-helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
-echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
+echo -e '\033[0;31m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
 
 exit 0
