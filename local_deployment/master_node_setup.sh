@@ -126,8 +126,6 @@ echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 docker pull $DOCKER_USERNAME/kaldi-speechlab
 
 echo -e '\033[0;32m\nInitialising Kaldi Speech Recognition System...\n\033[m'
-# sudo swapoff -a
-# strace -eopenat kubectl version
 
 # prompt to put the models in the models directory
 sudo cp -r ./models/ /opt/models

@@ -29,12 +29,12 @@ read -p 'Join command: ' JOIN_COMMAND
 echo -e '\033[0;32m\nPlease enter the Docker Hub username with the custom Docker image\033[m'
 read -p 'Username: ' DOCKER_USERNAME
 
-echo -e '\033[0;32mUpdating system software...\n\033[m'
+echo -e '\033[0;32m\nUpdating system software...\n\033[m'
 sleep 1
 
 sudo apt update && sudo apt upgrade -y
 
-echo -e '\033[0;32mInstalling Docker...\n\033[m'
+echo -e '\033[0;32m\nInstalling Docker...\n\033[m'
 
 sudo apt autoremove -y
 
@@ -62,7 +62,7 @@ sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
 
-echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
+echo -e '\033[0;32m\nInstalling Kubernetes...\n\033[m'
 
 sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
@@ -85,7 +85,7 @@ echo -e '\033[0;31mKey in the password to the master node to enable transfer of 
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
 sleep 1
 
-echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
+echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
 docker pull $DOCKER_USERNAME/$DOCKER_IMAGE
 
