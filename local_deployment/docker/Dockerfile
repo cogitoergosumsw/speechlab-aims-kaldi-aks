@@ -131,7 +131,7 @@ RUN chmod +x /home/appuser/opt/tini
 
 # copy kube config
 RUN mkdir -p /home/appuser/.kube
-COPY --chown=appuser:appuser docker/secret/config /home/appuser/.kube/config
+COPY --chown=appuser:appuser secret/config /home/appuser/.kube/config
 
 # install kubectl command for delete completed jobs
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/linux/amd64/kubectl
