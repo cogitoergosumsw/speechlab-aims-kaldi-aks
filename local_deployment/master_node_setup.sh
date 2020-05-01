@@ -89,8 +89,6 @@ kubectl config set-context --current --namespace $NAMESPACE
 echo -e '\033[0;32mBuilding custom SpeechLab Docker image...\n\033[m'
 sleep 1
 
-CURRENT_DIRECTORY=$(pwd)
-
 sudo cp ~/.kube/config docker/secret/
 sleep 1
 docker build -t $DOCKER_USERNAME/$DOCKER_IMAGE docker/
