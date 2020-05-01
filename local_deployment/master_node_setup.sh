@@ -154,7 +154,7 @@ kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
 kubectl apply -f pv/local-models-pvc.yaml
 
-helm install --name $KUBE_NAME --namespace $NAMESPACE ../docker/helm/kaldi-feature-test/
+helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/kaldi-feature-test/
 echo -e '\033[0;31mCongratulations, the Kubernetes cluster is set up now!\n\033[m'
 
 exit 0
