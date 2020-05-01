@@ -48,11 +48,11 @@ sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
 
-echo -e '\033[0;32mPlease enter your Docker Hub username\n\033[m'
-read -p 'Username: ' DOCKER_USERNAME
-
 # might remove in the future to facilitate a better solution to push Docker image
 sudo docker login
+
+echo -e '\033[0;32m\nPlease enter your Docker Hub username for subsequent setup\033[m'
+read -p 'Username: ' DOCKER_USERNAME
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
