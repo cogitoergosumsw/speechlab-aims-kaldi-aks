@@ -47,10 +47,9 @@ sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo usermod -aG docker $USER
-newgrp docker
 
 # might remove in the future to facilitate a better solution to push Docker image
-docker login
+sudo docker login
 
 echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
 
@@ -86,7 +85,7 @@ sleep 1
 docker build -t heyhujiao/$DOCKER_IMAGE docker/
 sleep 1
 # change this to the repository to push the Docker image to
-docker push heyhujiao/$DOCKER_IMAGE
+sudo docker push heyhujiao/$DOCKER_IMAGE
 
 # echo -e '\033[0;32mSetting up local Docker container registry on current node...\n\033[m'
 # echo -e 'All containers in the cluster will pull the Docker image from the current container registry. \n'
