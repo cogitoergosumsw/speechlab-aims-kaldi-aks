@@ -20,12 +20,12 @@ Setting up the master node for deployment
 
 EOF
 
-echo -e '\033[0;32mUpdating system software...\n\033[m'
+echo -e '\033[0;32m\nUpdating system software...\n\033[m'
 sleep 1
 
 sudo apt update && sudo apt upgrade -y
 
-echo -e '\033[0;32mInstalling Docker...\n\033[m'
+echo -e '\033[0;32m\nInstalling Docker...\n\033[m'
 
 sudo apt autoremove -y
 
@@ -60,19 +60,19 @@ sudo docker login
 echo -e '\033[0;32m\nPlease enter your Docker Hub username for subsequent setup\033[m'
 read -p 'Username: ' DOCKER_USERNAME
 
-echo -e '\033[0;32mInstalling Kubernetes...\n\033[m'
+echo -e '\033[0;32m\nInstalling Kubernetes...\n\033[m'
 
 sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
 
-echo -e '\033[0;32mInitializing Kubernetes Cluster...\n\033[m'
+echo -e '\033[0;32m\nInitializing Kubernetes Cluster...\033[m'
 echo -e 'this process may take a few minutes, please wait patiently \n'
 sleep 1
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 > kube_details.txt
-echo -e '\033[0;32mKubernetes cluster is successfully set up.\n\033[m'
+echo -e '\033[0;32m\nKubernetes cluster is successfully set up.\n\033[m'
 
-echo -e '\033[0;32mConfiguring Kubernetes Cluster...\n\033[m'
+echo -e '\033[0;32m\nConfiguring Kubernetes Cluster...\n\033[m'
 sleep 1
 
 mkdir -p $HOME/.kube
@@ -96,7 +96,7 @@ kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
 kubectl apply -f pv/local-models-pvc.yaml
 
-echo -e '\033[0;32mBuilding custom SpeechLab Docker image...\n\033[m'
+echo -e '\033[0;32m\nBuilding custom SpeechLab Docker image...\n\033[m'
 sleep 1
 
 sudo cp ~/.kube/config docker/secret/
@@ -121,24 +121,25 @@ docker push $DOCKER_USERNAME/$DOCKER_IMAGE
 # docker push localhost:5000/$DOCKER_IMAGE
 #######################################################################
 
-echo -e '\033[0;32mPulling custom Docker image...\n\033[m'
+echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
 docker pull $DOCKER_USERNAME/kaldi-speechlab
 
-echo -e '\033[0;32mInitialising Kaldi Speech Recognition System...\n\033[m'
+echo -e '\033[0;32m\nInitialising Kaldi Speech Recognition System...\n\033[m'
 # sudo swapoff -a
 # strace -eopenat kubectl version
 
 # prompt to put the models in the models directory
 sudo cp -r ./models/ /opt/models
 
-echo -e '\033[0;32mModels copied to mount directory!\n\033[m'
+echo -e '\033[0;32m\nModels copied to mount directory!\n\033[m'
 
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/$KUBE_NAME/
 sleep 1
 PRIVATE_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
-echo -e '\033[0;31m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
+echo -e '\033[0;32m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
+echo -e '\nYou can find the command for a worker node to join this Kubernetes cluster at \033[0;31m/local_deployment/kube_details.txt\033[m\n'
 
 exit 0
