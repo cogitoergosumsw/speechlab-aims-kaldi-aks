@@ -15,8 +15,7 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: kubernetes.io/os
           operator: In
           values:
-          # input the name of the nodes
-          - local192b
+          - linux
