@@ -79,7 +79,7 @@ CURRENT_DIRECTORY=$(pwd)
 
 sudo cp ~/.kube/config docker/secret/
 sleep 1
-docker build -t $DOCKER_IMAGE docker/
+docker build -t heyhujiao/$DOCKER_IMAGE docker/
 sleep 1
 # change this to the repository to push the Docker image to
 docker push heyhujiao/$DOCKER_IMAGE

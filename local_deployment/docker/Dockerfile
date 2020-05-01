@@ -134,7 +134,7 @@ RUN mkdir -p /home/appuser/.kube
 COPY --chown=appuser:appuser secret/config /home/appuser/.kube/config
 
 # install kubectl command for delete completed jobs
-RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/linux/amd64/kubectl
+RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 
 COPY --chown=appuser:appuser scripts/cronjob.py scripts/cronjob_delete_kubernetes_jobs.sh /home/appuser/opt/
