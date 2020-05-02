@@ -126,7 +126,7 @@ echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
 docker pull $DOCKER_USERNAME/kaldi-speechlab
 
-echo -e '\033[0;32m\nInitialising Kaldi Speech Recognition System...\n\033[m'
+echo -e '\033[0;32m\nInitialising Kaldi Speech Recognition System...\033[m'
 
 # prompt to put the models in the models directory
 sudo cp -r ./models/ /opt/models
@@ -139,6 +139,6 @@ sleep 1
 kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
 echo -e '\033[0;32m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
-echo -e '\nYou can find the command for a worker node to join this Kubernetes cluster at \033[0;31m/local_deployment/kube_details.txt\033[m\n'
+echo -e 'You can find the command for a worker node to join this Kubernetes cluster at \033[0;31m/local_deployment/kube_details.txt\033[m\n'
 
 exit 0
