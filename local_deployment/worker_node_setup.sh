@@ -72,7 +72,7 @@ sudo swapoff -a
 mkdir -p $HOME/.kube
 sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
 
-sudo $JOIN_COMMAND
+sudo $JOIN_COMMAND --control-plane
 
 # installing helm
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
