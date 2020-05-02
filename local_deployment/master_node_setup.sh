@@ -10,6 +10,7 @@ export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
 export USER_NAME=speechlablocal
 export NAMESPACE=kaldi-test
+PRIVATE_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 
 cat <<EOF
 
@@ -134,7 +135,7 @@ echo -e '\033[0;32m\nModels copied to mount directory!\n\033[m'
 
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/$KUBE_NAME/
 sleep 1
-PRIVATE_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+
 kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
 echo -e '\033[0;32m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
