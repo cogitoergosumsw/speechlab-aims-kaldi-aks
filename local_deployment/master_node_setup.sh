@@ -141,6 +141,8 @@ kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBal
 
 sudo swapoff -a
 
+sudo chown -R $(id -u):$(id -g) $HOME/.kube/config
+
 echo -e '\033[0;32m\nCongratulations, the Kubernetes cluster is set up now!\n\033[m'
 echo -e 'You can find the command for a worker node to join this Kubernetes cluster at \033[0;31m/local_deployment/kube_details.txt\033[m\n'
 
