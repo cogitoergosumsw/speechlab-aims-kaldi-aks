@@ -67,17 +67,10 @@ echo -e '\033[0;32m\nInstalling Kubernetes...\n\033[m'
 sudo apt-get install -qy kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
 sudo apt-mark hold kubelet kubeadm kubectl
 
-sudo swapoff -a
-
 mkdir -p $HOME/.kube
-sudo chown -R $(id -u):$(id -g) /home/$USER_NAME/.kube
+sudo chown -R $(id -u):$(id -g) $HOME/.kube
 
-sudo $JOIN_COMMAND --control-plane
-
-# installing helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
+sudo $JOIN_COMMAND
 
 # copy the Kubernetes config file from the master node to the worker node
 echo -e '\033[0;32m\nBasic setup on worker node is complete. We are almost done!\n\033[m'
