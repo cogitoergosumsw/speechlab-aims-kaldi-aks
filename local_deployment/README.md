@@ -22,7 +22,7 @@ The nginx sticky session which routes requests to the master service is only exp
 
 ## Overarching System Architecture
 
-![Archtecture Diagram](./overarching architecture.png)
+![Archtecture Diagram](./overarching_architecture.png)
 
 ## Deployment
 
