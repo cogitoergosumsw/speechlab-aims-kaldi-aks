@@ -73,12 +73,6 @@ sudo chown -R $(id -u):$(id -g) $HOME/.kube
 
 sudo $JOIN_COMMAND
 
-# copy the Kubernetes config file from the master node to the worker node
-echo -e '\033[0;32m\nBasic setup on worker node is complete. We are almost done!\n\033[m'
-echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
-sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
-sleep 1
-
 echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
 docker pull $DOCKER_USERNAME/$DOCKER_IMAGE
@@ -87,6 +81,12 @@ docker pull $DOCKER_USERNAME/$DOCKER_IMAGE
 sudo cp -r ./models/ /opt/models
 
 sudo chown -R $(id -u):$(id -g) $HOME/.kube
+
+# copy the Kubernetes config file from the master node to the worker node
+echo -e '\033[0;32m\nBasic setup on worker node is complete. We are almost done!\n\033[m'
+echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
+sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
+sleep 1
 
 echo -e '\033[0;32m\nWorker node setup complete.\n\033[m'
 
