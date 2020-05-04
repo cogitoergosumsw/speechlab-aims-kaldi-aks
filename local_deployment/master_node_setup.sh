@@ -88,10 +88,11 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 kubectl create namespace $NAMESPACE
 kubectl config set-context --current --namespace $NAMESPACE
 kubectl taint nodes --all node-role.kubernetes.io/master-
+
 # installing tiller, part of helm installation
-kubectl create serviceaccount --namespace kube-system tiller
-kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-helm init --service-account tiller
+# kubectl create serviceaccount --namespace kube-system tiller
+# kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+# helm init --service-account tiller
 
 kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
