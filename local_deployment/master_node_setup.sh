@@ -136,6 +136,7 @@ sudo cp -r ./models/ /opt/models
 
 echo -e '\033[0;32m\nModels copied to mount directory!\n\033[m'
 
+# might need to give the Kubernetes cluster some time before deploying the application
 sleep 60
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/$KUBE_NAME/
 sleep 1
