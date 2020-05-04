@@ -24,7 +24,9 @@ sudo apt update && sudo apt upgrade -y
 
 echo -e '\033[0;32m\nInstalling Helm...\n\033[m'
 sleep 1
-sudo snap install helm --classic
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
+chmod u+x /tmp/install-helm.sh
+/tmp/install-helm.sh
 
 echo -e '\033[0;32m\nInstalling Docker...\n\033[m'
 
@@ -90,9 +92,9 @@ kubectl config set-context --current --namespace $NAMESPACE
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # installing tiller, part of helm installation
-# kubectl create serviceaccount --namespace kube-system tiller
-# kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-# helm init --service-account tiller
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
 
 kubectl apply -f docker/secret/run_kubernetes_secret.yaml
 kubectl apply -f pv/local-models-pv.yaml
@@ -123,9 +125,9 @@ docker push $DOCKER_USERNAME/$DOCKER_IMAGE
 # docker push localhost:5000/$DOCKER_IMAGE
 #######################################################################
 
-# echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
+echo -e '\033[0;32m\nPulling custom Docker image...\n\033[m'
 # change this to the repository to pull the Docker image from
-# docker pull $DOCKER_USERNAME/kaldi-speechlab
+docker pull $DOCKER_USERNAME/kaldi-speechlab
 
 echo -e '\033[0;32m\nInitialising Kaldi Speech Recognition System...\033[m'
 
