@@ -147,6 +147,8 @@ sleep 1
 helm install --name $NGINX_STICKY ingress-nginx/ingress-nginx
 sleep 1
 
+kubectl apply -f nginx-sticky-server.yaml
+
 kubectl patch svc $NGINX_STICKY-ingress-nginx-controller -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
 sudo swapoff -a
