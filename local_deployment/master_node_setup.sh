@@ -1,15 +1,11 @@
 #!/bin/bash
 set -eu
 
-# installing helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
-
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
 export USER_NAME=speechlablocal
 export NAMESPACE=kaldi-test
+export NGINX_STICKY=nginx-sticky
 PRIVATE_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 
 cat <<EOF
@@ -25,6 +21,10 @@ echo -e '\033[0;32m\nUpdating system software...\n\033[m'
 sleep 1
 
 sudo apt update && sudo apt upgrade -y
+
+echo -e '\033[0;32m\nInstalling Helm...\n\033[m'
+sleep 1
+sudo snap install helm --classic
 
 echo -e '\033[0;32m\nInstalling Docker...\n\033[m'
 
@@ -137,7 +137,14 @@ sleep 5
 helm install --name $KUBE_NAME --namespace $NAMESPACE docker/helm/$KUBE_NAME/
 sleep 1
 
-kubectl patch svc $KUBE_NAME-master -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+sleep 1
+helm repo update
+sleep 1
+helm install --name $NGINX_STICKY ingress-nginx/ingress-nginx
+sleep 1
+
+kubectl patch svc $NGINX_STICKY-ingress-nginx-controller -n $NAMESPACE -p '{"spec": {"type": "LoadBalancer", "externalIPs":["'$PRIVATE_IP'"]}}'
 
 sudo swapoff -a
 

@@ -1,11 +1,6 @@
 #!/bin/bash
 set -eu
 
-# installing helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get >/tmp/install-helm.sh
-chmod u+x /tmp/install-helm.sh
-/tmp/install-helm.sh
-
 export DOCKER_IMAGE=kaldi-speechlab
 export KUBE_NAME=kaldi-feature-test
 export USER_NAME=speechlablocal
@@ -33,6 +28,10 @@ echo -e '\033[0;32m\nUpdating system software...\n\033[m'
 sleep 1
 
 sudo apt update && sudo apt upgrade -y
+
+echo -e '\033[0;32m\nInstalling Helm...\n\033[m'
+sleep 1
+sudo snap install helm --classic
 
 echo -e '\033[0;32m\nInstalling Docker...\n\033[m'
 
