@@ -80,13 +80,13 @@ docker pull $DOCKER_USERNAME/$DOCKER_IMAGE
 # prompt to put the models in the models directory
 sudo cp -r ./models/ /opt/models
 
-sudo chown -R $(id -u):$(id -g) $HOME/.kube
-
 # copy the Kubernetes config file from the master node to the worker node
 echo -e '\033[0;32m\nBasic setup on worker node is complete. We are almost done!\n\033[m'
 echo -e '\033[0;31mKey in the password to the master node to enable transfer of Kubernetes cluster config file! \n\033[m'
 sudo scp $USER_NAME@$MASTER_IP:/home/$USER_NAME/.kube/config /home/$USER_NAME/.kube/config
 sleep 1
+
+sudo chown -R $(id -u):$(id -g) $HOME/.kube
 
 echo -e '\033[0;32m\nWorker node setup complete.\n\033[m'
 

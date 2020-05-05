@@ -90,7 +90,7 @@ In order for a worker node to access the Kubernetes cluster's API server i.e. ru
 
 1. Put the speech recognition models in the `models/` directory in this folder. Refer to the README.md in that folder for more information.
 
-2. Compress and zip up this directory e.g `sudo tar cvzf local-speechlab-deployment.tar.gz $HOME/speechlab-aims-kaldi-aks/local_deployment/`
+2. Compress and zip up this directory e.g `sudo tar cvzf local-speechlab-deployment.tar.gz local_deployment/`
 
 3. Transfer the tar file to the master node (you may physically transfer the compressed directory with a stick or via SSH i.e using `scp`)
 
