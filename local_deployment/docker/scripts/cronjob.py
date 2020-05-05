@@ -7,7 +7,7 @@ def job():
 # https://savvytime.com/converter/sgt-to-utc
 # SGT 3am = UCT 7pm 
 # for debug : schedule.every(1).minutes.do(job)
-schedule.every().day.at("19:00").do(job)
+schedule.every(15).minutes.do(job)
 
 while True:
     schedule.run_pending()

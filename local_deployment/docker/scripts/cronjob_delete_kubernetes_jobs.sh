@@ -1,2 +1,4 @@
 #!/bin/bash
-/home/appuser/opt/kubectl delete job $(/home/appuser/opt/kubectl get job --namespace $NAMESPACE -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}') --namespace $NAMESPACE
+kubectl delete job $(kubectl get job -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}') >> /home/appuser/log
+
+exit 0
