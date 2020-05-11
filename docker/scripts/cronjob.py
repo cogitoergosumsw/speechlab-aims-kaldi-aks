@@ -2,7 +2,7 @@ import schedule, time, subprocess, logging
 
 def job():
     logging.info("Checking completed jobs and delete them")
-    subprocess.Popen(['bash', '/home/appuser/opt/cronjob_delete_kubenetes_jobs.sh'])  #async
+    subprocess.Popen(['bash', '/home/appuser/opt/cronjob_delete_kubernetes_jobs.sh'])  #async
 
 # https://savvytime.com/converter/sgt-to-utc
 # SGT 3am = UCT 7pm 
