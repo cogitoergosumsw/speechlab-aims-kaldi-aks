@@ -111,10 +111,10 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: "5Gi"
+              memory: "4Gi"
             requests:
               cpu: 1
-              memory: "5Gi"
+              memory: "4Gi"
           env:
           - name: MODEL_DIR
             value: {{ $model_name }}

@@ -120,8 +120,8 @@ def create_job(MODEL):
                                    security_context=client.V1SecurityContext(
                                        privileged=True, capabilities=client.V1Capabilities(add=["SYS_ADMIN"])),
                                    resources=client.V1ResourceRequirements(
-                                       limits={"memory": "5G", "cpu": "1"}, 
-                                       requests={"memory": "5G", "cpu": "1"}
+                                       limits={"memory": "4G", "cpu": "1"}, 
+                                       requests={"memory": "4G", "cpu": "1"}
                                        ),
                                    volume_mounts=[client.V1VolumeMount(
                                         mount_path="/home/appuser/opt/models",
