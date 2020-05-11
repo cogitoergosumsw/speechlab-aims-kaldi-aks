@@ -54,7 +54,7 @@ RUN pip3 install futures requests pyasn1 schedule==0.6.0 setuptools python-dateu
 RUN wget http://www.digip.org/jansson/releases/jansson-2.7.tar.bz2 && \
     bunzip2 -c jansson-2.7.tar.bz2 | tar xf -  && \
     cd jansson-2.7 && \
-    ./configure && make -j 8 && make -j 4 check &&  make -j 4 install && \
+    ./configure && make -j 2 && make -j 2 check &&  make -j 2 install && \
     echo "/usr/local/lib" >> /etc/ld.so.conf.d/jansson.conf && ldconfig && \
     rm /jansson-2.7.tar.bz2 && rm -rf /jansson-2.7
 
@@ -86,9 +86,9 @@ RUN git clone https://github.com/kaldi-asr/kaldi && \
 
 RUN cd /home/appuser/opt/kaldi/src && ./configure --shared --mathlib=ATLAS && \
     sed -i '/-g # -O0 -DKALDI_PARANOID/c\-O3 -DNDEBUG' kaldi.mk && \
-    make -j 4 depend && make -j 4 && \
-    cd /home/appuser/opt/kaldi/src/online && make -j 4 depend && make -j 4 && \
-    cd /home/appuser/opt/kaldi/src/gst-plugin && make -j 4 depend && make -j 4
+    make -j 2 depend && make -j 2 && \
+    cd /home/appuser/opt/kaldi/src/online && make -j 2 depend && make -j 2 && \
+    cd /home/appuser/opt/kaldi/src/gst-plugin && make -j 2 depend && make -j 2
 
 ENV KALDI_NNET2_ONLINE_SHA1 617e43e73c7cc45eb9119028c02bd4178f738c4a
 # https://github.com/alumae/gst-kaldi-nnet2-online/commit/617e43e73c7cc45eb9119028c02bd4178f738c4a
@@ -99,7 +99,7 @@ RUN cd /home/appuser/opt && \
     git reset --hard $KALDI_NNET2_ONLINE_SHA1 && \
     cd /home/appuser/opt/gst-kaldi-nnet2-online/src && \
     sed -i '/KALDI_ROOT?=\/home\/tanel\/tools\/kaldi-trunk/c\KALDI_ROOT?=\/home/appuser/opt\/kaldi' Makefile && \
-    make -j 4 depend && make -j 4 && \
+    make -j 2 depend && make -j 2 && \
     rm -rf /home/appuser/opt/gst-kaldi-nnet2-online/.git/ && \
     find /home/appuser/opt/gst-kaldi-nnet2-online/src/ -type f -not -name '*.so' -delete && \
     rm -rf /home/appuser/opt/kaldi/.git && \
@@ -142,5 +142,5 @@ RUN chmod +x ./kubectl
 
 COPY --chown=appuser:appuser scripts/cronjob.py scripts/cronjob_delete_kubernetes_jobs.sh /home/appuser/opt/
 
-COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
+# COPY --chown=appuser:appuser ssl /home/appuser/opt/ssl
 
