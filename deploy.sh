@@ -206,12 +206,12 @@ sleep 240
 git clone https://github.com/helm/charts.git /tmp/pro-fana
 
 helm install --name prometheus \
+    stable/prometheus \
     --set server.global.scrape_interval='10s' \
     --set server.global.scrape_timeout='10s' \
     --set server.persistentVolume.size='35Gi' \
     --set server.global.evaluation_interval='10s' \
-    --namespace $NAMESPACE \
-    /tmp/pro-fana/stable/prometheus
+    --namespace $NAMESPACE
 
 echo "Waiting for Prometheus to be deployed within the cluster..."
 sleep 3
