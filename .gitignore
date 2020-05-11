@@ -8,3 +8,4 @@ models/*
 !models/README.md
 docker/audio/long/*
 !docker/audio/long/README.md
+docker/secret/config
