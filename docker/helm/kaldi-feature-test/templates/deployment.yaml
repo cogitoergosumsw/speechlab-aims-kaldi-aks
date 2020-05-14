@@ -40,10 +40,10 @@ spec:
               containerPort: 8081
           resources:
             limits:
-              cpu: 2
+              cpu: 1
               memory: "2Gi"
             requests:
-              cpu: 2
+              cpu: 1
               memory: "2Gi"
           livenessProbe:
             httpGet:
